@@ -1,6 +1,6 @@
-## JavaScript.c
+## C.js
 
-Projeto pertencente ao grupo 0? de Compiladores 2025.2 da FCTE/UnB com o objetivo de colocar em prática os conhecimentos da matéria em um compilador de JavaScript para C. 
+Projeto pertencente ao grupo 05 de Compiladores 2025.2 da FCTE/UnB com o objetivo de colocar em prática os conhecimentos da matéria em um compilador de C para JavaScript. 
 
 ## Equipe
 
