@@ -11,12 +11,19 @@ void yyerror(const char *s);
 %%
 
 expressao:
-    expressao PLUS expressao
-  | expressao MINUS expressao
-  | expressao TIMES expressao
-  | expressao DIVIDE expressao
-  | LPAREN expressao RPAREN
-  | NUM
+    expressao PLUS expressao {$$ = $1 + $3;}
+  | expressao MINUS expressao {$$ = $1 - $3;}
+  | expressao TIMES expressao {$$ = $1 * $3;}
+  | expressao DIVIDE expressao {
+    if ($3 == 0){
+        fprintf(stderr, "[ERRO SEMANTICO] Divisao por zero\n");
+        $$ = 0;
+    }  else {
+        $$ = $1 / $3;
+    }
+  }
+  | LPAREN expressao RPAREN {$$ = $2;}
+  | NUM {$$ = $1;}
   ;
 
 %%

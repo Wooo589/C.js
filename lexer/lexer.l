@@ -1,5 +1,6 @@
 %{
 #include "parser.tab.h"
+int contaLinhas = 0;
 %}
 
 %%
@@ -11,7 +12,9 @@
 "/"             { return DIVIDE; }
 "("             { return LPAREN; }
 ")"             { return RPAREN; }
-[ \t\n]+        { /* Ignorar espaços em branco */ }
+";"             { return SEMICOLON; }
+"[\n]+"         { contaLinhas++; }
+[ \t]+        { /* Ignorar espaços em branco */ }
 .               { printf("Caractere inválido: %s\n", yytext); }
 
 %%
