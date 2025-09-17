@@ -31,7 +31,6 @@ int contaLinhas = 0;
 "}"             { return RBRACE; }
 "["             { return LBRACKET; }
 "]"             { return RBRACKET; }
-";"             { return SEMICOLON; }
 ","             { return COMMA; }
 "++"            { return INCREMENT; }
 "--"            { return DECREMENT; }
