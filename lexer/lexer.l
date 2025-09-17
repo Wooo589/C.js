@@ -26,8 +26,6 @@ int contaLinhas = 0;
 "!"             { return NOT; }
 "("             { return LPAREN; }
 ")"             { return RPAREN; }
-"{"             { return LBRACE; }
-"}"             { return RBRACE; }
 ";"             { return SEMICOLON; }
 "{"             { return LBRACE; }
 "}"             { return RBRACE; }
