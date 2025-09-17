@@ -26,6 +26,8 @@ int contaLinhas = 0;
 "!"             { return NOT; }
 "("             { return LPAREN; }
 ")"             { return RPAREN; }
+"{"             { return LBRACE; }
+"}"             { return RBRACE; }
 ";"             { return SEMICOLON; }
 "{"             { return LBRACE; }
 "}"             { return RBRACE; }
@@ -65,6 +67,7 @@ int contaLinhas = 0;
 
 "if"            { return IF; }
 "else"          { return ELSE; }
+"else if"       { return ELSEIF}
 "while"         { return WHILE; }
 "for"           { return FOR; }
 "do"            { return DO; }
