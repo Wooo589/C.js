@@ -6,9 +6,27 @@ int yylex(void);
 void yyerror(const char *s);
 %}
 
-%token NUM PLUS MINUS TIMES DIVIDE SEMICOLON LPAREN RPAREN IF LBRACE RBRACE ELSE ELSEIF
+%token INT FLOAT DOUBLE CHAR CONST VOID SHORT LONG SIGNED UNSIGNED VAR ASSIGN NUM PLUS MINUS TIMES DIVIDE SEMICOLON LPAREN RPAREN IF LBRACE RBRACE ELSE ELSEIF
 
 %%
+
+tipo:
+      INT;
+    | FLOAT;
+    | DOUBLE
+    | CHAR
+    | CONST 
+    | VOID 
+    | SHORT
+    | LONG 
+    | SIGNED
+    | UNSIGNED
+    ;
+
+atribuicao:
+    tipo VAR ASSIGN expressao
+    | VAR ASSIGN expressao
+    ;
 
 expressao:
     expressao PLUS expressao SEMICOLON {$$ = $1 + $3;}
@@ -22,12 +40,12 @@ expressao:
         $$ = $1 / $3;
     }
   }
-  | LPAREN expressao RPAREN SEMICOLON {$$ = $2;}
-  | NUM SEMICOLON {$$ = $1;}
+  | LPAREN expressao RPAREN SEMICOLON {$$ = $2;} 
+  | NUM SEMICOLON {$$ = $1;} 
   ;
 
 condicao:
-      IF LPAREN expressao RPAREN bloco condicao_encadeada
+      IF LPAREN expressao RPAREN bloco condicao_encadeada 
     ;
 
 condicao_encadeada:
