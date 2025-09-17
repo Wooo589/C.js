@@ -6,6 +6,7 @@ int contaLinhas = 0;
 %%
 
 [0-9]+          { yylval = atoi(yytext); return NUM; }
+[0-9]+"."[0-9]+ { yylval = atof(yytext); return FLOAT_NUM; }
 "+"             { return PLUS; }
 "-"             { return MINUS; }
 "*"             { return TIMES; }
