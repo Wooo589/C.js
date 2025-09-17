@@ -33,11 +33,13 @@ int contaLinhas = 0;
 "]"             { return RBRACKET; }
 ";"             { return SEMICOLON; }
 ","             { return COMMA; }
+"++"            { return INCREMENT; }
+"--"            { return DECREMENT; }
+"->"            { return ARROW; }
 "[\n]+"         { contaLinhas++; }
 [ \t]+        { /* Ignorar espaços em branco */ }
 .               { printf("Caractere inválido: %s\n", yytext); }
-"++"            { return INCREMENT; }
-"--"            { return DECREMENT; }
+
 
 "int"           { return INT; }
 "float"         { return FLOAT; }
@@ -59,7 +61,7 @@ int contaLinhas = 0;
 "struct"        { return STRUCT; }
 "typedef"       { return TYPEDEF; }
 "union"         { return UNION; }
-"volatile"     { return VOLATILE; }
+"volatile"      { return VOLATILE; }
 
 "if"            { return IF; }
 "else"          { return ELSE; }
