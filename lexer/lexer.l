@@ -5,8 +5,8 @@ int contaLinhas = 0;
 
 %%
 
-[-+]?[0-9]+     { yylval = atoi(yytext); return NUM; } //fazer float
-/*VARIAVEL    { return VAR; }*/
+[0-9]+          { yylval = atoi(yytext); return NUM; }
+[0-9]+"."[0-9]+ { yylval = atof(yytext); return FLOAT_NUM; }
 "+"             { return PLUS; }
 "-"             { return MINUS; }
 "*"             { return TIMES; }
@@ -27,20 +27,19 @@ int contaLinhas = 0;
 "!"             { return NOT; }
 "("             { return LPAREN; }
 ")"             { return RPAREN; }
-"{"             { return LBRACE; }
-"}"             { return RBRACE; }
 ";"             { return SEMICOLON; }
 "{"             { return LBRACE; }
 "}"             { return RBRACE; }
 "["             { return LBRACKET; }
 "]"             { return RBRACKET; }
-";"             { return SEMICOLON; }
 ","             { return COMMA; }
+"++"            { return INCREMENT; }
+"--"            { return DECREMENT; }
+"->"            { return ARROW; }
 "[\n]+"         { contaLinhas++; }
 [ \t]+        { /* Ignorar espaços em branco */ }
 .               { printf("Caractere inválido: %s\n", yytext); }
-"++"            { return INCREMENT; }
-"--"            { return DECREMENT; }
+
 
 "int"           { return INT; }
 "float"         { return FLOAT; }
@@ -62,7 +61,7 @@ int contaLinhas = 0;
 "struct"        { return STRUCT; }
 "typedef"       { return TYPEDEF; }
 "union"         { return UNION; }
-"volatile"     { return VOLATILE; }
+"volatile"      { return VOLATILE; }
 
 "if"            { return IF; }
 "else"          { return ELSE; }
