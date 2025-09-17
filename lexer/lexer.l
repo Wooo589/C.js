@@ -24,13 +24,48 @@ int contaLinhas = 0;
 "("             { return LPAREN; }
 ")"             { return RPAREN; }
 ";"             { return SEMICOLON; }
+"{"             { return LBRACE; }
+"}"             { return RBRACE; }
+"["             { return LBRACKET; }
+"]"             { return RBRACKET; }
+";"             { return SEMICOLON; }
+","             { return COMMA; }
 "[\n]+"         { contaLinhas++; }
 [ \t]+        { /* Ignorar espaços em branco */ }
 .               { printf("Caractere inválido: %s\n", yytext); }
+"++"            { return INCREMENT; }
+"--"            { return DECREMENT; }
 
+"int"           { return INT; }
+"float"         { return FLOAT; }
+"double"        { return DOUBLE; }
+"char"          { return CHAR; }
+"void"          { return VOID; }
+"short"         { return SHORT; }
+"long"          { return LONG; }
+"signed"        { return SIGNED; }
+"unsigned"      { return UNSIGNED; }
+
+"="             { return ASSIGN; }
+"+="            { return PLUS_ASSIGN; }
+"-="            { return MINUS_ASSIGN; }
+
+"=="            { return EQ; }
+"!="            { return NEQ; }
+"<"             { return LT; }
+">"             { return GT; }
+"<="            { return LEQ; }
+">="            { return GEQ; }
 
 "if"            { return IF; }
 "else"          { return ELSE; }
 "while"         { return WHILE; }
+"for"           { return FOR; }
+"do"            { return DO; }
+"switch"        { return SWITCH; }
+"case"          { return CASE; }
+"default"       { return DEFAULT; }
+"break"         { return BREAK; }
+"return"        { return RETURN; }
 
 %%
