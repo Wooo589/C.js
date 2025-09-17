@@ -12,6 +12,9 @@ int contaLinhas = 0;
 "/"             { return DIVIDE; }
 "^"             { return POWER; } 
 "%"             { return MOD; }
+"="             { return ASSIGN; }
+"+="            { return PLUS_ASSIGN; }
+"-="            { return MINUS_ASSIGN; }
 "=="            { return EQ; }
 "!="            { return NEQ; }
 "<"             { return LT; }
@@ -45,17 +48,6 @@ int contaLinhas = 0;
 "long"          { return LONG; }
 "signed"        { return SIGNED; }
 "unsigned"      { return UNSIGNED; }
-
-"="             { return ASSIGN; }
-"+="            { return PLUS_ASSIGN; }
-"-="            { return MINUS_ASSIGN; }
-
-"=="            { return EQ; }
-"!="            { return NEQ; }
-"<"             { return LT; }
-">"             { return GT; }
-"<="            { return LEQ; }
-">="            { return GEQ; }
 
 "if"            { return IF; }
 "else"          { return ELSE; }
