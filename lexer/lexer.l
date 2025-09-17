@@ -43,11 +43,23 @@ int contaLinhas = 0;
 "float"         { return FLOAT; }
 "double"        { return DOUBLE; }
 "char"          { return CHAR; }
+"const"         { return CONST; }
 "void"          { return VOID; }
 "short"         { return SHORT; }
 "long"          { return LONG; }
 "signed"        { return SIGNED; }
 "unsigned"      { return UNSIGNED; }
+"auto"          { return AUTO; }
+"continue"      { return CONTINUE; }
+"enum"          { return ENUM; }
+"extern"        { return EXTERN; }
+"register"      { return REGISTER; }
+"sizeof"        { return SIZEOF; }
+"static"        { return STATIC; }
+"struct"        { return STRUCT; }
+"typedef"       { return TYPEDEF; }
+"union"         { return UNION; }
+"volatile"     { return VOLATILE; }
 
 "if"            { return IF; }
 "else"          { return ELSE; }
