@@ -30,4 +30,3 @@ Projeto pertencente ao grupo 05 de Compiladores 2025.2 da FCTE/UnB com o objetiv
     </td>
   </tr>
 </table>
-
