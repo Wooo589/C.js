@@ -4,3 +4,6 @@ lex.yy.c
 # Arquivos gerados pelo Bison
 parser.tab.c
 parser.tab.h
+
+# Executáveis
+c_parser

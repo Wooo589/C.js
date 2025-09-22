@@ -1,5 +1,5 @@
 # Nome do executável final
-EXEC = parser
+EXEC = c_parser
 
 # Diretórios
 BISON_DIR = parser
@@ -27,14 +27,14 @@ FLEX_FLAGS  =      # deixe vazio ou acrescente opções, se necessário
 # Parâmetros de compilação
 CC      = gcc
 CFLAGS  =
-LDFLAGS = -lfl     # biblioteca do Flex (em algumas distros, pode ser -ll)
+LDFLAGS = -lfl -lm     # biblioteca do Flex e matemática
 
 # Regra padrão (alvo 'all' vai gerar o executável)
 all: $(EXEC)
 
 # Regra para gerar o executável: depende dos arquivos gerados por Bison e Flex
-$(EXEC): $(BISON_C) $(FLEX_C)
-	$(CC) $(CFLAGS) -o $@ $(BISON_C) $(FLEX_C) $(LDFLAGS)
+$(EXEC): $(BISON_C) $(FLEX_C) $(MAIN_C)
+	$(CC) $(CFLAGS) -o $@ $(BISON_C) $(FLEX_C) $(MAIN_C) $(LDFLAGS)
 
 # Regra para rodar o Bison: gera parser.tab.c e parser.tab.h
 $(BISON_C) $(BISON_H): $(BISON_FILE)
