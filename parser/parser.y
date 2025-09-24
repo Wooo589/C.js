@@ -59,7 +59,7 @@ declaracao_funcao:
     ;
 
 parametros:
-    | lista_parametros
+    lista_parametros
     ;
 
 lista_parametros:
@@ -125,14 +125,13 @@ comando_return:
 
 loop:
     WHILE LPAREN expressao RPAREN bloco
-    | FOR LPAREN atribuicao_ou_expressao SEMICOLON expressao SEMICOLON atribuicao_ou_expressao RPAREN bloco
+    | FOR LPAREN atribuicao SEMICOLON expressao SEMICOLON atribuicao RPAREN bloco /* tem q ver isso aqui ein */
     | DO bloco WHILE LPAREN expressao RPAREN SEMICOLON
     ;
 
-atribuicao_ou_expressao:
-    /* vazio */
-    | atribuicao
-    | expressao
+atribuicao_ou_expressao: /* tem q ver se tem nada ein */
+        atribuicao
+    |   expressao
     ;
 
 atribuicao:
