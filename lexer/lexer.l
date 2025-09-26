@@ -76,7 +76,10 @@
 "/*"([^*]|"*"[^/])*"*/" { /* Ignorar comentários de bloco */ }
 \n              { contaLinhas++; }
 [ \t]+          { /* Ignorar espaços em branco */ }
-.               { printf("Caractere inválido na linha %d: %s\n", contaLinhas, yytext); }
+.               { 
+                    fprintf(stderr, "Erro Léxico: Caractere inválido '%s' na linha %d.\n", yytext, contaLinhas); 
+                    exit(1); 
+                }
 
 %%
 

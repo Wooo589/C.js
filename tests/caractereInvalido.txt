@@ -1,0 +1,3 @@
+int valor_valido = 10;
+int valor_com@erro = 20;
+int outro_valor = 30;
