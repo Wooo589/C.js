@@ -3,7 +3,7 @@
     #include <string.h> 
     #include <stdio.h>
     #include "parser.tab.h"
-    int contaLinhas = 0;
+    int contaLinhas = 1;
 %}
 
 /* Regras Léxicas */
@@ -74,9 +74,10 @@
 "->"            { return ARROW; }
 "//.*"          { /* Ignorar comentários de linha */ }
 "/*"([^*]|"*"[^/])*"*/" { /* Ignorar comentários de bloco */ }
-"[\n]+"         { contaLinhas++; }
-[ \t]+        { /* Ignorar espaços em branco */ }
-.               { printf("Caractere inválido: %s\n", yytext); }
+\n              { contaLinhas++; }
+[ \t]+          { /* Ignorar espaços em branco */ }
+.               { printf("Caractere inválido na linha %d: %s\n", contaLinhas, yytext); }
+
 %%
 
 

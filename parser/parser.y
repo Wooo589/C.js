@@ -4,9 +4,12 @@
 #include <math.h>
 #include <string.h>
 
+
 int yylex(void);
 void yyerror(const char *s);
 void semantic_error(const char *s);
+extern char* yytext;
+extern int contaLinhas;
 %}
 
 %union {
@@ -253,7 +256,7 @@ loop:
 %%
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Erro sintático: %s\n", s);
+    fprintf(stderr, "Erro sintático perto da linha %d. Token inesperado: '%s'\n", contaLinhas, yytext);
 }
 
 void semantic_error(const char *s) {
