@@ -13,12 +13,12 @@ void semantic_error(const char *s);
     int ival;
     float fval;
     double dval;
-    char *sval;  
+    char *sval;
 }
 
 %token <ival> NUM
 %token <fval> FLOAT_NUM
-%token <sval> VAR CHAR 
+%token <sval> VAR CHAR
 %token <ival> INT
 %token <fval> FLOAT
 %token <dval> DOUBLE
@@ -30,36 +30,37 @@ void semantic_error(const char *s);
 %token AUTO ENUM EXTERN REGISTER SIZEOF STATIC STRUCT TYPEDEF UNION VOLATILE
 
 %type <fval> expressao
-%type <sval> tipo
-%type <sval> tipo_base
-%type <sval> modificador
+%type <sval> tipo tipo_base modificador modificadores
 
-%right ASSIGN PLUS_ASSIGN MINUS_ASSIGN TIMES_ASSIGN DIVIDE_ASSIGN MOD_ASSIGN 
+%right ASSIGN PLUS_ASSIGN MINUS_ASSIGN TIMES_ASSIGN DIVIDE_ASSIGN MOD_ASSIGN
 %left OR
 %left AND
 %left EQ NEQ
 %left LT GT LEQ GEQ
 %left PLUS MINUS
 %left TIMES DIVIDE MOD
+%right UNARY
 %right NOT
 %left POWER
-%left INCREMENT DECREMENT
+%precedence IFX
+%precedence ELSE
 
 %%
 
 programa:
     declaracao_funcao
-    | comandos
+    | comando
     | programa declaracao_funcao
+    | programa comando
     ;
 
 declaracao_funcao:
     tipo VAR LPAREN parametros RPAREN bloco
-    | VOID VAR LPAREN parametros RPAREN bloco
     ;
 
 parametros:
-    lista_parametros
+    /* vazio */
+    | lista_parametros
     ;
 
 lista_parametros:
@@ -76,7 +77,7 @@ declaracao:
     tipo VAR
     | tipo VAR ASSIGN expressao
     | tipo VAR LBRACKET expressao RBRACKET
-    | TYPEDEF tipo VAR SEMICOLON
+    | TYPEDEF tipo VAR
     ;
 
 comando:
@@ -92,51 +93,8 @@ comando:
     | bloco
     ;
 
-switch_statement:
-    SWITCH LPAREN expressao RPAREN LBRACE case_list RBRACE
-    ;
-
-case_list:
-    /* vazio */
-    | case_list case_statement
-    | case_list default_statement
-    ;
-
-case_statement:
-    CASE expressao SEMICOLON comandos
-    ;
-
-default_statement:
-    DEFAULT SEMICOLON comandos
-    ;
-
-comando_break:
-    BREAK SEMICOLON
-    ;
-
-comando_continue:
-    CONTINUE SEMICOLON
-    ;
-
-comando_return:
-    RETURN SEMICOLON
-    | RETURN expressao SEMICOLON
-    ;
-
-loop:
-    WHILE LPAREN expressao RPAREN bloco
-    | FOR LPAREN atribuicao SEMICOLON expressao SEMICOLON atribuicao RPAREN bloco /* tem q ver isso aqui ein */
-    | DO bloco WHILE LPAREN expressao RPAREN SEMICOLON
-    ;
-
-atribuicao_ou_expressao: /* tem q ver se tem nada ein */
-        atribuicao
-    |   expressao
-    ;
-
 atribuicao:
-    tipo VAR ASSIGN expressao
-    | VAR ASSIGN expressao
+    VAR ASSIGN expressao
     | VAR PLUS_ASSIGN expressao
     | VAR MINUS_ASSIGN expressao
     | VAR TIMES_ASSIGN expressao
@@ -150,12 +108,10 @@ atribuicao:
 
 tipo:
     tipo_base { $$ = $1; }
-    | modificador tipo_base { asprintf(&$$, "%s %s", $1, $2); }
-    | tipo_base modificador { asprintf(&$$, "%s %s", $1, $2); }
-    | modificador modificador tipo_base { asprintf(&$$, "%s %s %s", $1, $2, $3); }
-    | STRUCT VAR LBRACE declaracoes_struct RBRACE { asprintf(&$$, "struct %s", $2); }
-    | UNION VAR LBRACE declaracoes_struct RBRACE { asprintf(&$$, "union %s", $2); }
-    | ENUM VAR LBRACE lista_enumeradores RBRACE { asprintf(&$$, "enum %s", $2); }
+    | modificadores tipo_base { asprintf(&$$, "%s %s", $1, $2); free($1); free($2); }
+    | STRUCT VAR LBRACE declaracoes_struct RBRACE { asprintf(&$$, "struct %s", $2); free($2); }
+    | UNION VAR LBRACE declaracoes_struct RBRACE { asprintf(&$$, "union %s", $2); free($2); }
+    | ENUM VAR LBRACE lista_enumeradores RBRACE { asprintf(&$$, "enum %s", $2); free($2); }
     ;
 
 tipo_base:
@@ -164,6 +120,11 @@ tipo_base:
     | DOUBLE { $$ = strdup("double"); }
     | CHAR { $$ = strdup("char"); }
     | VOID { $$ = strdup("void"); }
+    ;
+
+modificadores:
+    modificador { $$ = $1; }
+    | modificadores modificador { asprintf(&$$, "%s %s", $1, $2); free($1); free($2); }
     ;
 
 modificador:
@@ -201,7 +162,7 @@ expressao:
             $$ = $1 / $3;
         }
     }
-    | expressao MOD expressao { $$ = $1 % $3; }
+    | expressao MOD expressao { $$ = fmod($1, $3); }
     | expressao POWER expressao { $$ = pow($1, $3); }
     | expressao EQ expressao { $$ = ($1 == $3); }
     | expressao NEQ expressao { $$ = ($1 != $3); }
@@ -212,8 +173,8 @@ expressao:
     | expressao AND expressao { $$ = ($1 && $3); }
     | expressao OR expressao { $$ = ($1 || $3); }
     | NOT expressao { $$ = !$2; }
-    | MINUS expressao { $$ = -$2; }
-    | PLUS expressao { $$ = $2; }
+    | MINUS expressao %prec UNARY { $$ = -$2; }
+    | PLUS expressao %prec UNARY { $$ = $2; }
     | LPAREN expressao RPAREN { $$ = $2; }
     | NUM { $$ = $1; }
     | FLOAT_NUM { $$ = $1; }
@@ -236,7 +197,9 @@ lista_argumentos:
     ;
 
 condicao:
-    IF LPAREN expressao RPAREN bloco condicao_encadeada
+    IF LPAREN expressao RPAREN bloco %prec IFX
+    | IF LPAREN expressao RPAREN bloco ELSE bloco
+    | IF LPAREN expressao RPAREN bloco ELSEIF LPAREN expressao RPAREN bloco condicao_encadeada
     ;
 
 condicao_encadeada:
@@ -250,6 +213,43 @@ bloco:
     | LBRACE RBRACE
     ;
 
+switch_statement:
+    SWITCH LPAREN expressao RPAREN LBRACE case_list RBRACE
+    ;
+
+case_list:
+    /* vazio */
+    | case_list case_statement
+    | case_list default_statement
+    ;
+
+case_statement:
+    CASE expressao SEMICOLON comandos
+    ;
+
+default_statement:
+    DEFAULT SEMICOLON comandos
+    ;
+
+comando_break:
+    BREAK SEMICOLON
+    ;
+
+comando_continue:
+    CONTINUE SEMICOLON
+    ;
+
+comando_return:
+    RETURN SEMICOLON
+    | RETURN expressao SEMICOLON
+    ;
+
+loop:
+    WHILE LPAREN expressao RPAREN bloco
+    | FOR LPAREN atribuicao SEMICOLON expressao SEMICOLON atribuicao RPAREN bloco
+    | DO bloco WHILE LPAREN expressao RPAREN SEMICOLON
+    ;
+
 %%
 
 void yyerror(const char *s) {
@@ -257,5 +257,5 @@ void yyerror(const char *s) {
 }
 
 void semantic_error(const char *s) {
-    fprintf(stderr, "Erro semantico: %s\n", s);
+    fprintf(stderr, "Erro semântico: %s\n", s);
 }
