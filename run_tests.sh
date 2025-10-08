@@ -1,3 +1,5 @@
+#!/bin/bash
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -38,7 +40,11 @@ for test_file in $(find ${TEST_DIR} -name "*.txt"); do
                 PASSED_COUNT=$((PASSED_COUNT + 1))
             else
                 echo -e "  └─ ${RED}[FAIL]${NC} A mensagem de erro não é a esperada."
-                echo -e "$diff_output"
+                echo -e "     ├─ ${YELLOW}Esperado:${NC}"
+                sed 's/^/     │  /' "$expected_err_file"
+                echo -e "     ├─ ${RED}Recebido:${NC}"
+                sed 's/^/     │  /' "$actual_err_file"
+                echo -e "     └─"
                 FAILED_COUNT=$((FAILED_COUNT + 1))
             fi
         else
@@ -54,14 +60,21 @@ for test_file in $(find ${TEST_DIR} -name "*.txt"); do
                  PASSED_COUNT=$((PASSED_COUNT + 1))
             else
                  echo -e "  └─ ${RED}[FAIL]${NC} A saída do programa não é a esperada."
-                 echo -e "$diff_output"
+                 echo -e "     ├─ ${YELLOW}Esperado:${NC}"
+                 sed 's/^/     │  /' "$expected_out_file"
+                 echo -e "     ├─ ${RED}Recebido:${NC}"
+                 sed 's/^/     │  /' "$actual_out_file"
+                 echo -e "     └─"
                  FAILED_COUNT=$((FAILED_COUNT + 1))
             fi
         else
+            # --- MUDANÇA NESTE BLOCO ---
             echo -e "  └─ ${RED}[FAIL]${NC} O programa deveria passar, mas falhou (exit code $status)."
-            echo -e "     --- Erro reportado ---"
-            cat "$actual_err_file"
-            echo -e "     ----------------------"
+            echo -e "     ├─ ${YELLOW}Saída Esperada (stdout):${NC}"
+            sed 's/^/     │  /' "$expected_out_file"
+            echo -e "     ├─ ${RED}Erro Inesperado (stderr):${NC}"
+            sed 's/^/     │  /' "$actual_err_file"
+            echo -e "     └─"
             FAILED_COUNT=$((FAILED_COUNT + 1))
         fi
     else
