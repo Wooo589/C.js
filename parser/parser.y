@@ -3,13 +3,17 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-
+#include "symbol_table.h"
 
 int yylex(void);
 void yyerror(const char *s);
 void semantic_error(const char *s);
 extern char* yytext;
 extern int contaLinhas;
+
+// Tabela de símbolos global
+SymbolTable *global_table = NULL;
+SymbolTable *current_table = NULL;
 %}
 
 %union {
@@ -51,10 +55,19 @@ extern int contaLinhas;
 %%
 
 programa:
+    { 
+        // Inicializar tabela de símbolos global
+        global_table = create_symbol_table(NULL);
+        current_table = global_table;
+    }
+    programa_corpo
+    ;
+
+programa_corpo:
     declaracao_funcao
     | comando
-    | programa declaracao_funcao
-    | programa comando
+    | programa_corpo declaracao_funcao
+    | programa_corpo comando
     ;
 
 declaracao_funcao:
@@ -77,10 +90,69 @@ comandos:
     ;
 
 declaracao:
-    tipo VAR
-    | tipo VAR ASSIGN expressao
-    | tipo VAR LBRACKET expressao RBRACKET
-    | TYPEDEF tipo VAR
+    tipo VAR {
+        // Verificar se já foi declarada
+        if (lookup_symbol_current_scope(current_table, $2) != NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Variável '%s' já foi declarada neste escopo", 
+                    contaLinhas, $2);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        // Inserir na tabela de símbolos (não inicializada)
+        insert_symbol(current_table, $2, $1, SYMBOL_VARIABLE, contaLinhas, 0);
+        free($1);
+        free($2);
+    }
+    | tipo VAR ASSIGN expressao {
+        // Verificar se já foi declarada
+        if (lookup_symbol_current_scope(current_table, $2) != NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Variável '%s' já foi declarada neste escopo", 
+                    contaLinhas, $2);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        // Inserir na tabela de símbolos (inicializada)
+        insert_symbol(current_table, $2, $1, SYMBOL_VARIABLE, contaLinhas, 1);
+        free($1);
+        free($2);
+    }
+    | tipo VAR LBRACKET expressao RBRACKET {
+        // Verificar se já foi declarada
+        if (lookup_symbol_current_scope(current_table, $2) != NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Variável '%s' já foi declarada neste escopo", 
+                    contaLinhas, $2);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        // Array - inserir na tabela
+        char *array_type = malloc(strlen($1) + 10);
+        sprintf(array_type, "%s[]", $1);
+        insert_symbol(current_table, $2, array_type, SYMBOL_VARIABLE, contaLinhas, 1);
+        free($1);
+        free($2);
+        free(array_type);
+    }
+    | TYPEDEF tipo VAR {
+        // Verificar se já foi declarada
+        if (lookup_symbol_current_scope(current_table, $3) != NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Typedef '%s' já foi declarado neste escopo", 
+                    contaLinhas, $3);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        // Inserir typedef na tabela
+        insert_symbol(current_table, $3, $2, SYMBOL_TYPEDEF, contaLinhas, 1);
+        free($2);
+        free($3);
+    }
     ;
 
 comando:
@@ -97,16 +169,129 @@ comando:
     ;
 
 atribuicao:
-    VAR ASSIGN expressao
-    | VAR PLUS_ASSIGN expressao
-    | VAR MINUS_ASSIGN expressao
-    | VAR TIMES_ASSIGN expressao
-    | VAR DIVIDE_ASSIGN expressao
-    | VAR MOD_ASSIGN expressao
-    | VAR INCREMENT
-    | VAR DECREMENT
-    | INCREMENT VAR
-    | DECREMENT VAR
+    VAR ASSIGN expressao {
+        // Verificar se a variável foi declarada
+        Symbol *symbol = lookup_symbol(current_table, $1);
+        if (symbol == NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Variável '%s' não foi declarada", 
+                    contaLinhas, $1);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        // Marcar como inicializada
+        update_symbol_initialization(current_table, $1);
+        free($1);
+    }
+    | VAR PLUS_ASSIGN expressao {
+        Symbol *symbol = lookup_symbol(current_table, $1);
+        if (symbol == NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Variável '%s' não foi declarada", 
+                    contaLinhas, $1);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        free($1);
+    }
+    | VAR MINUS_ASSIGN expressao {
+        Symbol *symbol = lookup_symbol(current_table, $1);
+        if (symbol == NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Variável '%s' não foi declarada", 
+                    contaLinhas, $1);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        free($1);
+    }
+    | VAR TIMES_ASSIGN expressao {
+        Symbol *symbol = lookup_symbol(current_table, $1);
+        if (symbol == NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Variável '%s' não foi declarada", 
+                    contaLinhas, $1);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        free($1);
+    }
+    | VAR DIVIDE_ASSIGN expressao {
+        Symbol *symbol = lookup_symbol(current_table, $1);
+        if (symbol == NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Variável '%s' não foi declarada", 
+                    contaLinhas, $1);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        free($1);
+    }
+    | VAR MOD_ASSIGN expressao {
+        Symbol *symbol = lookup_symbol(current_table, $1);
+        if (symbol == NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Variável '%s' não foi declarada", 
+                    contaLinhas, $1);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        free($1);
+    }
+    | VAR INCREMENT {
+        Symbol *symbol = lookup_symbol(current_table, $1);
+        if (symbol == NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Variável '%s' não foi declarada", 
+                    contaLinhas, $1);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        free($1);
+    }
+    | VAR DECREMENT {
+        Symbol *symbol = lookup_symbol(current_table, $1);
+        if (symbol == NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Variável '%s' não foi declarada", 
+                    contaLinhas, $1);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        free($1);
+    }
+    | INCREMENT VAR {
+        Symbol *symbol = lookup_symbol(current_table, $2);
+        if (symbol == NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Variável '%s' não foi declarada", 
+                    contaLinhas, $2);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        free($2);
+    }
+    | DECREMENT VAR {
+        Symbol *symbol = lookup_symbol(current_table, $2);
+        if (symbol == NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Variável '%s' não foi declarada", 
+                    contaLinhas, $2);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        free($2);
+    }
     ;
 
 tipo:
@@ -181,10 +366,52 @@ expressao:
     | LPAREN expressao RPAREN { $$ = $2; }
     | NUM { $$ = $1; }
     | FLOAT_NUM { $$ = $1; }
-    | VAR { $$ = 0; } /* Variável - por enquanto retorna 0 */
-    | VAR LPAREN argumentos RPAREN { $$ = 0; }
-    | VAR LBRACKET expressao RBRACKET { $$ = 0; }
-    | VAR ARROW VAR { $$ = 0; }
+    | VAR { 
+        // Verificar se a variável foi declarada
+        Symbol *symbol = lookup_symbol(current_table, $1);
+        if (symbol == NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Variável '%s' não foi declarada", 
+                    contaLinhas, $1);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        $$ = 0; /* Variável - por enquanto retorna 0 */
+        free($1);
+    }
+    | VAR LPAREN argumentos RPAREN { 
+        // Verificar se a função foi declarada
+        Symbol *symbol = lookup_symbol(current_table, $1);
+        if (symbol == NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Aviso na linha %d: Função '%s' não foi declarada", 
+                    contaLinhas, $1);
+            fprintf(stderr, "%s\n", error_msg);
+        }
+        $$ = 0; 
+        free($1);
+    }
+    | VAR LBRACKET expressao RBRACKET { 
+        // Verificar se a variável foi declarada
+        Symbol *symbol = lookup_symbol(current_table, $1);
+        if (symbol == NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Array '%s' não foi declarado", 
+                    contaLinhas, $1);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        $$ = 0; 
+        free($1);
+    }
+    | VAR ARROW VAR { 
+        $$ = 0; 
+        free($1);
+        free($3);
+    }
     | SIZEOF LPAREN tipo RPAREN { $$ = 0; }
     | SIZEOF LPAREN VAR RPAREN { $$ = 0; }
     ;
@@ -256,9 +483,34 @@ loop:
 %%
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Erro sintático perto da linha %d. Token inesperado: '%s'\n", contaLinhas, yytext);
+    fprintf(stderr, "%s\n", s);
 }
 
 void semantic_error(const char *s) {
     fprintf(stderr, "Erro semântico: %s\n", s);
+}
+
+int main(int argc, char **argv) {
+    extern FILE *yyin;
+    
+    if (argc > 1) {
+        FILE *file = fopen(argv[1], "r");
+        if (file) {
+            yyin = file;
+        }
+    }
+    
+    int result = yyparse();
+    
+    // Imprimir tabela de símbolos se a análise foi bem-sucedida
+    if (result == 0 && global_table != NULL) {
+        print_symbol_table(global_table);
+    }
+    
+    // Liberar memória da tabela de símbolos
+    if (global_table != NULL) {
+        free_symbol_table(global_table);
+    }
+    
+    return result;
 }
