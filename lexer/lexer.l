@@ -42,7 +42,7 @@
 
 [+-]?[0-9]+          { yylval.ival = atoi(yytext); return NUM; }
 [+-]?[0-9]+"."[0-9]+ { yylval.fval = atof(yytext); return FLOAT_NUM; }
-[a-zA-Z_][a-zA-Z0-9_]* { return VAR; }
+[a-zA-Z_][a-zA-Z0-9_]* { yylval.sval = strdup(yytext); return VAR; }
 "+"             { return PLUS; }
 "-"             { return MINUS; }
 "*"             { return TIMES; }
@@ -86,14 +86,4 @@
 
 int yywrap(void) {
     return 1;
-}
-
-int main(int argc, char **argv) {
-    if (argc > 1) {
-        FILE *file = fopen(argv[1], "r");
-        if (file) {
-            yyin = file;
-        }
-    }
-    return yyparse();
 }
