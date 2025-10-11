@@ -71,7 +71,26 @@ programa_corpo:
     ;
 
 declaracao_funcao:
-    tipo VAR LPAREN parametros RPAREN bloco
+    tipo VAR LPAREN {
+        if (lookup_symbol_current_scope(current_table, $2) != NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Função '%s' já foi declarada neste escopo", 
+                    contaLinhas, $2);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        insert_symbol(current_table, $2, $1, SYMBOL_FUNCTION, contaLinhas, 1);
+        current_table = create_symbol_table(current_table); // Novo escopo para parâmetros e corpo
+    } 
+    parametros RPAREN bloco {
+        print_symbol_table(current_table); // Opcional: para debug
+        SymbolTable *temp = current_table;
+        current_table = current_table->parent;
+        free_symbol_table(temp);
+        free($1);
+        free($2);
+    }
     ;
 
 parametros:
@@ -80,8 +99,32 @@ parametros:
     ;
 
 lista_parametros:
-    tipo VAR
-    | lista_parametros COMMA tipo VAR
+    tipo VAR {
+        if (lookup_symbol_current_scope(current_table, $2) != NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Parâmetro '%s' já foi declarado neste escopo", 
+                    contaLinhas, $2);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        insert_symbol(current_table, $2, $1, SYMBOL_PARAMETER, contaLinhas, 1);
+        free($1);
+        free($2);
+    }
+    | lista_parametros COMMA tipo VAR {
+        if (lookup_symbol_current_scope(current_table, $4) != NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Parâmetro '%s' já foi declarado neste escopo", 
+                    contaLinhas, $4);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        insert_symbol(current_table, $4, $3, SYMBOL_PARAMETER, contaLinhas, 1);
+        free($3);
+        free($4);
+    }
     ;
 
 comandos:
@@ -185,16 +228,17 @@ atribuicao:
         free($1);
     }
     | VAR PLUS_ASSIGN expressao {
-        Symbol *symbol = lookup_symbol(current_table, $1);
-        if (symbol == NULL) {
-            char error_msg[256];
-            snprintf(error_msg, sizeof(error_msg), 
-                    "Erro semântico na linha %d: Variável '%s' não foi declarada", 
-                    contaLinhas, $1);
-            yyerror(error_msg);
-            YYERROR;
-        }
-        free($1);
+    Symbol *symbol = lookup_symbol(current_table, $1);
+    if (symbol == NULL) {
+        char error_msg[256];
+        snprintf(error_msg, sizeof(error_msg), 
+                "Erro semântico na linha %d: Variável '%s' não foi declarada", 
+                contaLinhas, $1);
+        yyerror(error_msg);
+        YYERROR;
+    }
+    update_symbol_initialization(current_table, $1);
+    free($1);
     }
     | VAR MINUS_ASSIGN expressao {
         Symbol *symbol = lookup_symbol(current_table, $1);
@@ -377,7 +421,7 @@ expressao:
             yyerror(error_msg);
             YYERROR;
         }
-        $$ = 0; /* Variável - por enquanto retorna 0 */
+        $$ = 0;
         free($1);
     }
     | VAR LPAREN argumentos RPAREN { 
@@ -439,7 +483,15 @@ condicao_encadeada:
     ;
 
 bloco:
-    LBRACE comandos RBRACE
+    LBRACE {
+        current_table = create_symbol_table(current_table);
+    }
+    comandos RBRACE {
+        print_symbol_table(current_table);
+        SymbolTable *temp = current_table;
+        current_table = current_table->parent;
+        free_symbol_table(temp);
+    }
     | LBRACE RBRACE
     ;
 
