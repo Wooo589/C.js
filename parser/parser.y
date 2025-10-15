@@ -474,6 +474,14 @@ condicao:
     IF LPAREN expressao RPAREN bloco %prec IFX
     | IF LPAREN expressao RPAREN bloco ELSE bloco
     | IF LPAREN expressao RPAREN bloco ELSEIF LPAREN expressao RPAREN bloco condicao_encadeada
+    | IF LPAREN expressao RPAREN bloco ELSE LPAREN {
+        char error_msg[256];
+        snprintf(error_msg, sizeof(error_msg),
+                 "Erro de sintaxe na linha %d: 'else' não aceita uma condição.",
+                 contaLinhas);
+        yyerror(error_msg);
+        YYERROR; // Entra em modo de recuperação de erro
+    }
     ;
 
 condicao_encadeada:
