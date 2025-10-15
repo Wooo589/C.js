@@ -34,7 +34,7 @@ SymbolTable *current_table = NULL;
 %token EQ NEQ LT GT LEQ GEQ AND OR NOT
 %token PLUS_ASSIGN MINUS_ASSIGN TIMES_ASSIGN DIVIDE_ASSIGN MOD_ASSIGN INCREMENT DECREMENT ARROW
 %token IF ELSE ELSEIF WHILE FOR DO SWITCH CASE DEFAULT BREAK CONTINUE RETURN
-%token AUTO ENUM EXTERN REGISTER SIZEOF STATIC STRUCT TYPEDEF UNION VOLATILE
+%token AUTO ENUM EXTERN REGISTER SIZEOF STATIC STRUCT TYPEDEF UNION VOLATILE STRING_LITERAL
 
 %type <fval> expressao
 %type <sval> tipo tipo_base modificador modificadores
@@ -84,7 +84,6 @@ declaracao_funcao:
         current_table = create_symbol_table(current_table); // Novo escopo para parâmetros e corpo
     } 
     parametros RPAREN bloco {
-        print_symbol_table(current_table); // Opcional: para debug
         SymbolTable *temp = current_table;
         current_table = current_table->parent;
         free_symbol_table(temp);
@@ -458,6 +457,7 @@ expressao:
     }
     | SIZEOF LPAREN tipo RPAREN { $$ = 0; }
     | SIZEOF LPAREN VAR RPAREN { $$ = 0; }
+    | STRING_LITERAL { }
     ;
 
 argumentos:
@@ -487,7 +487,6 @@ bloco:
         current_table = create_symbol_table(current_table);
     }
     comandos RBRACE {
-        print_symbol_table(current_table);
         SymbolTable *temp = current_table;
         current_table = current_table->parent;
         free_symbol_table(temp);
@@ -553,13 +552,6 @@ int main(int argc, char **argv) {
     }
     
     int result = yyparse();
-    
-    // Imprimir tabela de símbolos se a análise foi bem-sucedida
-    if (result == 0 && global_table != NULL) {
-        print_symbol_table(global_table);
-    }
-    
-    // Liberar memória da tabela de símbolos
     if (global_table != NULL) {
         free_symbol_table(global_table);
     }
