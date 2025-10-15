@@ -5,15 +5,24 @@
 
 typedef enum {
     AST_PROGRAM, 
-    AST_FUNCTION, 
+    AST_FUNCTION_DECLARATION,
     AST_BLOCK,
-    AST_DECL,
-    AST_ASSIGN,
+    AST_VARIABLE_DECLARATION,
+    AST_PARAMETER,
+    AST_ASSIGNMENT,
+    AST_IF,
+    AST_ELSE,
+    AST_WHILE,
+    AST_SWITCH,
+    AST_CASE,
+    AST_DEFAULT,
+    AST_BREAK,
+    AST_CONTINUE,
+    AST_RETURN,
     AST_EXPR_BINARY,
     AST_EXPR_VAR,
     AST_EXPR_NUM,
-    AST_EXPR_CALL,
-    AST_RETURN
+    AST_EXPR_CALL
 } ASTNodeType;
 
 typedef struct ASTNode {
@@ -21,6 +30,11 @@ typedef struct ASTNode {
     char *value; 
     char *data_type;
     int line;
+    // Expressão fields
+    float expr_value;
+    char *expr_type;
+    char *expr_name;
+    // Links
     struct ASTNode *left;
     struct ASTNode *right;
     struct ASTNode *next;
