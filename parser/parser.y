@@ -480,7 +480,7 @@ condicao:
                  "Erro de sintaxe na linha %d: 'else' não aceita uma condição.",
                  contaLinhas);
         yyerror(error_msg);
-        YYERROR; // Entra em modo de recuperação de erro
+        YYERROR;
     }
     ;
 

@@ -29,6 +29,7 @@
 "typedef"       { return TYPEDEF; }
 "union"         { return UNION; }
 "volatile"      { return VOLATILE; }
+"else if"       { return ELSEIF; } 
 "if"            { return IF; }
 "else"          { return ELSE; }
 "while"         { return WHILE; }
