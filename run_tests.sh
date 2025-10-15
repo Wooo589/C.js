@@ -16,7 +16,18 @@ TOTAL_TESTS=0
 echo -e "${WHITE}================ EXECUTANDO TESTES ================${NC}"
 make > /dev/null 2>&1
 
-for test_file in $(find ${TEST_DIR} -name "*.txt"); do
+if [ $# -eq 1 ]; then
+    SINGLE_TEST="$1"
+    if [ ! -f "$SINGLE_TEST" ]; then
+        echo -e "${RED}Arquivo de teste não encontrado:${NC} $SINGLE_TEST"
+        exit 1
+    fi
+    TEST_FILES=("$SINGLE_TEST")
+else
+    TEST_FILES=($(find ${TEST_DIR} -name "*.txt"))
+fi
+
+for test_file in "${TEST_FILES[@]}"; do
     TOTAL_TESTS=$((TOTAL_TESTS + 1))
     
     display_name=${test_file#"$TEST_DIR/"}
