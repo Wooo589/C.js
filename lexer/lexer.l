@@ -2,6 +2,8 @@
 %{
     #include <string.h> 
     #include <stdio.h>
+    #include "src/ast.h"         
+    #include "src/symbol_table.h" 
     #include "parser.tab.h"
     int contaLinhas = 1;
 %}

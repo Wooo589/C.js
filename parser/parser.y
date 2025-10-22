@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include "symbol_table.h"
+#include "src/ast.h"
+#include "src/symbol_table.h"
 
 int yylex(void);
 void yyerror(const char *s);
@@ -11,9 +12,9 @@ void semantic_error(const char *s);
 extern char* yytext;
 extern int contaLinhas;
 
-// Tabela de símbolos global
 SymbolTable *global_table = NULL;
 SymbolTable *current_table = NULL;
+ASTNode *ast_root = NULL;
 %}
 
 %union {
@@ -21,22 +22,24 @@ SymbolTable *current_table = NULL;
     float fval;
     double dval;
     char *sval;
+    ASTNode *ast;
 }
 
 %token <ival> NUM
 %token <fval> FLOAT_NUM
 %token <sval> VAR CHAR
-%token <ival> INT
-%token <fval> FLOAT
-%token <dval> DOUBLE
-%token CONST VOID SHORT LONG SIGNED UNSIGNED ASSIGN
+%token <ival> INT FLOAT DOUBLE VOID
+%token CONST SHORT LONG SIGNED UNSIGNED ASSIGN
 %token PLUS MINUS TIMES DIVIDE MOD POWER SEMICOLON LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET COMMA
 %token EQ NEQ LT GT LEQ GEQ AND OR NOT
 %token PLUS_ASSIGN MINUS_ASSIGN TIMES_ASSIGN DIVIDE_ASSIGN MOD_ASSIGN INCREMENT DECREMENT ARROW
-%token IF ELSE ELSEIF WHILE FOR DO SWITCH CASE DEFAULT BREAK CONTINUE RETURN
-%token AUTO ENUM EXTERN REGISTER SIZEOF STATIC STRUCT TYPEDEF UNION VOLATILE STRING_LITERAL
+%token IF ELSE WHILE FOR DO SWITCH CASE DEFAULT BREAK CONTINUE RETURN
+%token AUTO ENUM EXTERN REGISTER SIZEOF STATIC STRUCT TYPEDEF UNION VOLATILE
 
-%type <fval> expressao
+%type <ast> programa programa_corpo declaracao_funcao bloco comandos comando declaracao atribuicao expressao
+%type <ast> parametros lista_parametros condicao loop switch_statement comando_break comando_continue comando_return
+%type <ast> argumentos lista_argumentos case_list case_statement default_statement
+%type <ast> declaracoes_struct lista_enumeradores
 %type <sval> tipo tipo_base modificador modificadores
 
 %right ASSIGN PLUS_ASSIGN MINUS_ASSIGN TIMES_ASSIGN DIVIDE_ASSIGN MOD_ASSIGN
@@ -56,22 +59,26 @@ SymbolTable *current_table = NULL;
 
 programa:
     { 
-        // Inicializar tabela de símbolos global
         global_table = create_symbol_table(NULL);
         current_table = global_table;
+        ast_root = create_node(AST_PROGRAM, NULL, NULL, contaLinhas);
     }
-    programa_corpo
+    programa_corpo { 
+        ast_root->children = $2; 
+        $$ = ast_root;
+    }
     ;
 
 programa_corpo:
-    declaracao_funcao
-    | comando
-    | programa_corpo declaracao_funcao
-    | programa_corpo comando
+    declaracao_funcao { $$ = $1; }
+    | comando { $$ = $1; }
+    | programa_corpo declaracao_funcao { $1->next = $2; $$ = $1; }
+    | programa_corpo comando { $1->next = $2; $$ = $1; }
     ;
 
 declaracao_funcao:
-    tipo VAR LPAREN {
+    tipo VAR LPAREN parametros RPAREN bloco 
+    {
         if (lookup_symbol_current_scope(current_table, $2) != NULL) {
             char error_msg[256];
             snprintf(error_msg, sizeof(error_msg), 
@@ -80,21 +87,31 @@ declaracao_funcao:
             yyerror(error_msg);
             YYERROR;
         }
-        insert_symbol(current_table, $2, $1, SYMBOL_FUNCTION, contaLinhas, 1);
-        current_table = create_symbol_table(current_table); // Novo escopo para parâmetros e corpo
-    } 
-    parametros RPAREN bloco {
+        SymbolTable *func_table = create_symbol_table(current_table);
+        insert_symbol(func_table, $2, $1, SYMBOL_FUNCTION, contaLinhas, 1);
+        current_table = func_table;
+        
+        $$ = create_node(AST_FUNCTION_DECLARATION, $2, $1, contaLinhas);
+        if ($4) {
+            $$->children = $4;
+            ASTNode *last_param = $4;
+            while (last_param->next) last_param = last_param->next;
+            last_param->next = $6;
+        } else {
+            $$->children = $6;
+        }
+        
+        print_symbol_table(current_table);
         SymbolTable *temp = current_table;
         current_table = current_table->parent;
         free_symbol_table(temp);
-        free($1);
-        free($2);
+        free($1); free($2);
     }
     ;
 
 parametros:
-    /* vazio */
-    | lista_parametros
+    /* vazio */ { $$ = NULL; }
+    | lista_parametros { $$ = $1; }
     ;
 
 lista_parametros:
@@ -108,8 +125,8 @@ lista_parametros:
             YYERROR;
         }
         insert_symbol(current_table, $2, $1, SYMBOL_PARAMETER, contaLinhas, 1);
-        free($1);
-        free($2);
+        $$ = create_node(AST_PARAMETER, $2, $1, contaLinhas);
+        free($1); free($2);
     }
     | lista_parametros COMMA tipo VAR {
         if (lookup_symbol_current_scope(current_table, $4) != NULL) {
@@ -121,19 +138,21 @@ lista_parametros:
             YYERROR;
         }
         insert_symbol(current_table, $4, $3, SYMBOL_PARAMETER, contaLinhas, 1);
-        free($3);
-        free($4);
+        $$ = $1;
+        ASTNode *new_param = create_node(AST_PARAMETER, $4, $3, contaLinhas);
+        new_param->next = $1->next;
+        $1->next = new_param;
+        free($3); free($4);
     }
     ;
 
 comandos:
-    comando
-    | comandos comando
+    comando { $$ = $1; }
+    | comandos comando { $1->next = $2; $$ = $1; }
     ;
 
 declaracao:
     tipo VAR {
-        // Verificar se já foi declarada
         if (lookup_symbol_current_scope(current_table, $2) != NULL) {
             char error_msg[256];
             snprintf(error_msg, sizeof(error_msg), 
@@ -142,13 +161,11 @@ declaracao:
             yyerror(error_msg);
             YYERROR;
         }
-        // Inserir na tabela de símbolos (não inicializada)
         insert_symbol(current_table, $2, $1, SYMBOL_VARIABLE, contaLinhas, 0);
-        free($1);
-        free($2);
+        $$ = create_node(AST_VARIABLE_DECLARATION, $2, $1, contaLinhas);
+        free($1); free($2);
     }
     | tipo VAR ASSIGN expressao {
-        // Verificar se já foi declarada
         if (lookup_symbol_current_scope(current_table, $2) != NULL) {
             char error_msg[256];
             snprintf(error_msg, sizeof(error_msg), 
@@ -157,13 +174,12 @@ declaracao:
             yyerror(error_msg);
             YYERROR;
         }
-        // Inserir na tabela de símbolos (inicializada)
         insert_symbol(current_table, $2, $1, SYMBOL_VARIABLE, contaLinhas, 1);
-        free($1);
-        free($2);
+        $$ = create_node(AST_VARIABLE_DECLARATION, $2, $1, contaLinhas);
+        $$->children = $4;
+        free($1); free($2);
     }
     | tipo VAR LBRACKET expressao RBRACKET {
-        // Verificar se já foi declarada
         if (lookup_symbol_current_scope(current_table, $2) != NULL) {
             char error_msg[256];
             snprintf(error_msg, sizeof(error_msg), 
@@ -172,16 +188,14 @@ declaracao:
             yyerror(error_msg);
             YYERROR;
         }
-        // Array - inserir na tabela
-        char *array_type = malloc(strlen($1) + 10);
+        char *array_type = malloc(strlen($1) + 4);
         sprintf(array_type, "%s[]", $1);
         insert_symbol(current_table, $2, array_type, SYMBOL_VARIABLE, contaLinhas, 1);
-        free($1);
-        free($2);
-        free(array_type);
+        $$ = create_node(AST_VARIABLE_DECLARATION, $2, array_type, contaLinhas);
+        $$->children = $4;
+        free($1); free($2); free(array_type);
     }
     | TYPEDEF tipo VAR {
-        // Verificar se já foi declarada
         if (lookup_symbol_current_scope(current_table, $3) != NULL) {
             char error_msg[256];
             snprintf(error_msg, sizeof(error_msg), 
@@ -190,29 +204,27 @@ declaracao:
             yyerror(error_msg);
             YYERROR;
         }
-        // Inserir typedef na tabela
         insert_symbol(current_table, $3, $2, SYMBOL_TYPEDEF, contaLinhas, 1);
-        free($2);
-        free($3);
+        $$ = create_node(AST_VARIABLE_DECLARATION, $3, $2, contaLinhas);
+        free($2); free($3);
     }
     ;
 
 comando:
-    declaracao SEMICOLON
-    | atribuicao SEMICOLON
-    | expressao SEMICOLON
-    | condicao
-    | loop
-    | switch_statement
-    | comando_break
-    | comando_continue
-    | comando_return
-    | bloco
+    declaracao SEMICOLON { $$ = $1; }
+    | atribuicao SEMICOLON { $$ = $1; }
+    | expressao SEMICOLON { $$ = $1; }
+    | condicao { $$ = $1; }
+    | loop { $$ = $1; }
+    | switch_statement { $$ = $1; }
+    | comando_break { $$ = $1; }
+    | comando_continue { $$ = $1; }
+    | comando_return { $$ = $1; }
+    | bloco { $$ = $1; }
     ;
 
 atribuicao:
     VAR ASSIGN expressao {
-        // Verificar se a variável foi declarada
         Symbol *symbol = lookup_symbol(current_table, $1);
         if (symbol == NULL) {
             char error_msg[256];
@@ -222,22 +234,28 @@ atribuicao:
             yyerror(error_msg);
             YYERROR;
         }
-        // Marcar como inicializada
         update_symbol_initialization(current_table, $1);
+        $$ = create_node(AST_ASSIGNMENT, $1, NULL, contaLinhas);
+        $$->children = $3;
         free($1);
     }
     | VAR PLUS_ASSIGN expressao {
-    Symbol *symbol = lookup_symbol(current_table, $1);
-    if (symbol == NULL) {
-        char error_msg[256];
-        snprintf(error_msg, sizeof(error_msg), 
-                "Erro semântico na linha %d: Variável '%s' não foi declarada", 
-                contaLinhas, $1);
-        yyerror(error_msg);
-        YYERROR;
-    }
-    update_symbol_initialization(current_table, $1);
-    free($1);
+        Symbol *symbol = lookup_symbol(current_table, $1);
+        if (symbol == NULL) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Variável '%s' não foi declarada", 
+                    contaLinhas, $1);
+            yyerror(error_msg);
+            YYERROR;
+        }
+        update_symbol_initialization(current_table, $1);
+        $$ = create_node(AST_ASSIGNMENT, $1, NULL, contaLinhas);
+        ASTNode *binop = create_node(AST_EXPR_BINARY, "+=", symbol->type, contaLinhas);
+        binop->left = create_node(AST_EXPR_VAR, $1, symbol->type, contaLinhas);
+        binop->right = $3;
+        $$->children = binop;
+        free($1);
     }
     | VAR MINUS_ASSIGN expressao {
         Symbol *symbol = lookup_symbol(current_table, $1);
@@ -249,6 +267,12 @@ atribuicao:
             yyerror(error_msg);
             YYERROR;
         }
+        update_symbol_initialization(current_table, $1);
+        $$ = create_node(AST_ASSIGNMENT, $1, NULL, contaLinhas);
+        ASTNode *binop = create_node(AST_EXPR_BINARY, "-=", symbol->type, contaLinhas);
+        binop->left = create_node(AST_EXPR_VAR, $1, symbol->type, contaLinhas);
+        binop->right = $3;
+        $$->children = binop;
         free($1);
     }
     | VAR TIMES_ASSIGN expressao {
@@ -261,6 +285,12 @@ atribuicao:
             yyerror(error_msg);
             YYERROR;
         }
+        update_symbol_initialization(current_table, $1);
+        $$ = create_node(AST_ASSIGNMENT, $1, NULL, contaLinhas);
+        ASTNode *binop = create_node(AST_EXPR_BINARY, "*=", symbol->type, contaLinhas);
+        binop->left = create_node(AST_EXPR_VAR, $1, symbol->type, contaLinhas);
+        binop->right = $3;
+        $$->children = binop;
         free($1);
     }
     | VAR DIVIDE_ASSIGN expressao {
@@ -273,6 +303,12 @@ atribuicao:
             yyerror(error_msg);
             YYERROR;
         }
+        update_symbol_initialization(current_table, $1);
+        $$ = create_node(AST_ASSIGNMENT, $1, NULL, contaLinhas);
+        ASTNode *binop = create_node(AST_EXPR_BINARY, "/=", symbol->type, contaLinhas);
+        binop->left = create_node(AST_EXPR_VAR, $1, symbol->type, contaLinhas);
+        binop->right = $3;
+        $$->children = binop;
         free($1);
     }
     | VAR MOD_ASSIGN expressao {
@@ -285,6 +321,12 @@ atribuicao:
             yyerror(error_msg);
             YYERROR;
         }
+        update_symbol_initialization(current_table, $1);
+        $$ = create_node(AST_ASSIGNMENT, $1, NULL, contaLinhas);
+        ASTNode *binop = create_node(AST_EXPR_BINARY, "%=", symbol->type, contaLinhas);
+        binop->left = create_node(AST_EXPR_VAR, $1, symbol->type, contaLinhas);
+        binop->right = $3;
+        $$->children = binop;
         free($1);
     }
     | VAR INCREMENT {
@@ -297,6 +339,11 @@ atribuicao:
             yyerror(error_msg);
             YYERROR;
         }
+        update_symbol_initialization(current_table, $1);
+        $$ = create_node(AST_ASSIGNMENT, $1, NULL, contaLinhas);
+        ASTNode *binop = create_node(AST_EXPR_BINARY, "++", symbol->type, contaLinhas);
+        binop->left = create_node(AST_EXPR_VAR, $1, symbol->type, contaLinhas);
+        $$->children = binop;
         free($1);
     }
     | VAR DECREMENT {
@@ -309,6 +356,11 @@ atribuicao:
             yyerror(error_msg);
             YYERROR;
         }
+        update_symbol_initialization(current_table, $1);
+        $$ = create_node(AST_ASSIGNMENT, $1, NULL, contaLinhas);
+        ASTNode *binop = create_node(AST_EXPR_BINARY, "--", symbol->type, contaLinhas);
+        binop->left = create_node(AST_EXPR_VAR, $1, symbol->type, contaLinhas);
+        $$->children = binop;
         free($1);
     }
     | INCREMENT VAR {
@@ -321,6 +373,11 @@ atribuicao:
             yyerror(error_msg);
             YYERROR;
         }
+        update_symbol_initialization(current_table, $2);
+        $$ = create_node(AST_ASSIGNMENT, $2, NULL, contaLinhas);
+        ASTNode *binop = create_node(AST_EXPR_BINARY, "++", symbol->type, contaLinhas);
+        binop->left = create_node(AST_EXPR_VAR, $2, symbol->type, contaLinhas);
+        $$->children = binop;
         free($2);
     }
     | DECREMENT VAR {
@@ -333,6 +390,11 @@ atribuicao:
             yyerror(error_msg);
             YYERROR;
         }
+        update_symbol_initialization(current_table, $2);
+        $$ = create_node(AST_ASSIGNMENT, $2, NULL, contaLinhas);
+        ASTNode *binop = create_node(AST_EXPR_BINARY, "--", symbol->type, contaLinhas);
+        binop->left = create_node(AST_EXPR_VAR, $2, symbol->type, contaLinhas);
+        $$->children = binop;
         free($2);
     }
     ;
@@ -372,45 +434,67 @@ modificador:
     ;
 
 declaracoes_struct:
-    /* vazio */
-    | declaracoes_struct declaracao SEMICOLON
+    /* vazio */ { $$ = NULL; }
+    | declaracoes_struct declaracao SEMICOLON { $1->next = $2; $$ = $1; }
     ;
 
 lista_enumeradores:
-    VAR
-    | lista_enumeradores COMMA VAR
+    VAR { $$ = create_node(AST_EXPR_VAR, $1, NULL, contaLinhas); free($1); }
+    | lista_enumeradores COMMA VAR { $1->next = create_node(AST_EXPR_VAR, $3, NULL, contaLinhas); $$ = $1; free($3); }
     ;
 
 expressao:
-    expressao PLUS expressao { $$ = $1 + $3; }
-    | expressao MINUS expressao { $$ = $1 - $3; }
-    | expressao TIMES expressao { $$ = $1 * $3; }
-    | expressao DIVIDE expressao {
-        if ($3 == 0) {
-            semantic_error("Divisao por zero");
-            $$ = 0;
-        } else {
-            $$ = $1 / $3;
+    expressao PLUS expressao {
+        if ($1->expr_type && $3->expr_type && strcmp($1->expr_type, $3->expr_type) != 0) {
+            char error_msg[256];
+            snprintf(error_msg, sizeof(error_msg), 
+                    "Erro semântico na linha %d: Tipos incompatíveis na soma (%s e %s)", 
+                    contaLinhas, $1->expr_type, $3->expr_type);
+            yyerror(error_msg);
+            YYERROR;
         }
+        $$ = create_node(AST_EXPR_BINARY, "+", $1->expr_type ? $1->expr_type : "float", contaLinhas);
+        $$->left = $1;
+        $$->right = $3;
+        $$->expr_value = $1->expr_value + $3->expr_value;
+        free($1->expr_type); free($3->expr_type);
     }
-    | expressao MOD expressao { $$ = fmod($1, $3); }
-    | expressao POWER expressao { $$ = pow($1, $3); }
-    | expressao EQ expressao { $$ = ($1 == $3); }
-    | expressao NEQ expressao { $$ = ($1 != $3); }
-    | expressao LT expressao { $$ = ($1 < $3); }
-    | expressao GT expressao { $$ = ($1 > $3); }
-    | expressao LEQ expressao { $$ = ($1 <= $3); }
-    | expressao GEQ expressao { $$ = ($1 >= $3); }
-    | expressao AND expressao { $$ = ($1 && $3); }
-    | expressao OR expressao { $$ = ($1 || $3); }
-    | NOT expressao { $$ = !$2; }
-    | MINUS expressao %prec UNARY { $$ = -$2; }
-    | PLUS expressao %prec UNARY { $$ = $2; }
-    | LPAREN expressao RPAREN { $$ = $2; }
-    | NUM { $$ = $1; }
-    | FLOAT_NUM { $$ = $1; }
+    | expressao MINUS expressao {
+        $$ = create_node(AST_EXPR_BINARY, "-", $1->expr_type ? $1->expr_type : "float", contaLinhas);
+        $$->left = $1;
+        $$->right = $3;
+        $$->expr_value = $1->expr_value - $3->expr_value;
+        free($1->expr_type); free($3->expr_type);
+    }
+    | expressao TIMES expressao {
+        $$ = create_node(AST_EXPR_BINARY, "*", $1->expr_type ? $1->expr_type : "float", contaLinhas);
+        $$->left = $1;
+        $$->right = $3;
+        $$->expr_value = $1->expr_value * $3->expr_value;
+        free($1->expr_type); free($3->expr_type);
+    }
+    | expressao DIVIDE expressao {
+        if ($3->expr_value == 0) {
+            semantic_error("Divisão por zero");
+            YYERROR;
+        }
+        $$ = create_node(AST_EXPR_BINARY, "/", $1->expr_type ? $1->expr_type : "float", contaLinhas);
+        $$->left = $1;
+        $$->right = $3;
+        $$->expr_value = $1->expr_value / $3->expr_value;
+        free($1->expr_type); free($3->expr_type);
+    }
+    | NUM { 
+        $$ = create_node(AST_EXPR_NUM, NULL, "int", contaLinhas);
+        $$->expr_value = $1;
+        $$->expr_type = strdup("int");
+    }
+    | FLOAT_NUM { 
+        $$ = create_node(AST_EXPR_NUM, NULL, "float", contaLinhas);
+        $$->expr_value = $1;
+        $$->expr_type = strdup("float");
+    }
     | VAR { 
-        // Verificar se a variável foi declarada
         Symbol *symbol = lookup_symbol(current_table, $1);
         if (symbol == NULL) {
             char error_msg[256];
@@ -420,11 +504,12 @@ expressao:
             yyerror(error_msg);
             YYERROR;
         }
-        $$ = 0;
+        $$ = create_node(AST_EXPR_VAR, $1, symbol->type, contaLinhas);
+        $$->expr_type = strdup(symbol->type);
+        $$->expr_name = strdup($1);
         free($1);
     }
     | VAR LPAREN argumentos RPAREN { 
-        // Verificar se a função foi declarada
         Symbol *symbol = lookup_symbol(current_table, $1);
         if (symbol == NULL) {
             char error_msg[256];
@@ -433,110 +518,117 @@ expressao:
                     contaLinhas, $1);
             fprintf(stderr, "%s\n", error_msg);
         }
-        $$ = 0; 
+        $$ = create_node(AST_EXPR_CALL, $1, symbol ? symbol->type : "unknown", contaLinhas);
+        $$->children = $3;
         free($1);
     }
-    | VAR LBRACKET expressao RBRACKET { 
-        // Verificar se a variável foi declarada
-        Symbol *symbol = lookup_symbol(current_table, $1);
-        if (symbol == NULL) {
-            char error_msg[256];
-            snprintf(error_msg, sizeof(error_msg), 
-                    "Erro semântico na linha %d: Array '%s' não foi declarado", 
-                    contaLinhas, $1);
-            yyerror(error_msg);
-            YYERROR;
-        }
-        $$ = 0; 
-        free($1);
-    }
-    | VAR ARROW VAR { 
-        $$ = 0; 
-        free($1);
-        free($3);
-    }
-    | SIZEOF LPAREN tipo RPAREN { $$ = 0; }
-    | SIZEOF LPAREN VAR RPAREN { $$ = 0; }
-    | STRING_LITERAL { }
+    | LPAREN expressao RPAREN { $$ = $2; }
     ;
 
 argumentos:
-    /* vazio */
-    | lista_argumentos
+    /* vazio */ { $$ = NULL; }
+    | lista_argumentos { $$ = $1; }
     ;
 
 lista_argumentos:
-    expressao
-    | lista_argumentos COMMA expressao
+    expressao { $$ = $1; }
+    | lista_argumentos COMMA expressao { $1->next = $3; $$ = $1; }
     ;
 
 condicao:
-    IF LPAREN expressao RPAREN bloco %prec IFX
-    | IF LPAREN expressao RPAREN bloco ELSE bloco
-    | IF LPAREN expressao RPAREN bloco ELSEIF LPAREN expressao RPAREN bloco condicao_encadeada
-    | IF LPAREN expressao RPAREN bloco ELSE LPAREN {
-        char error_msg[256];
-        snprintf(error_msg, sizeof(error_msg),
-                 "Erro de sintaxe na linha %d: 'else' não aceita uma condição.",
-                 contaLinhas);
-        yyerror(error_msg);
-        YYERROR;
+    IF LPAREN expressao RPAREN bloco %prec IFX {
+        $$ = create_node(AST_IF, NULL, NULL, contaLinhas);
+        $$->children = $3;
+        ASTNode *if_block = create_node(AST_BLOCK, NULL, NULL, contaLinhas);
+        if_block->children = $5;
+        $$->next = if_block;
     }
-    ;
-
-condicao_encadeada:
-    /* vazio */
-    | ELSEIF LPAREN expressao RPAREN bloco condicao_encadeada
-    | ELSE bloco
+    | IF LPAREN expressao RPAREN bloco ELSE bloco {
+        $$ = create_node(AST_IF, NULL, NULL, contaLinhas);
+        $$->children = $3;
+        ASTNode *if_block = create_node(AST_BLOCK, NULL, NULL, contaLinhas);
+        if_block->children = $5;
+        $$->next = if_block;
+        ASTNode *else_block = create_node(AST_ELSE, NULL, NULL, contaLinhas);
+        else_block->children = $7;
+        if_block->next = else_block;
+    }
     ;
 
 bloco:
-    LBRACE {
+    LBRACE comandos RBRACE 
+    {
         current_table = create_symbol_table(current_table);
-    }
-    comandos RBRACE {
+        $$ = create_node(AST_BLOCK, NULL, NULL, contaLinhas);
+        $$->children = $2;
+        print_symbol_table(current_table);
         SymbolTable *temp = current_table;
         current_table = current_table->parent;
         free_symbol_table(temp);
     }
-    | LBRACE RBRACE
+    | LBRACE RBRACE 
+    { 
+        current_table = create_symbol_table(current_table);
+        $$ = create_node(AST_BLOCK, NULL, NULL, contaLinhas);
+        SymbolTable *temp = current_table;
+        current_table = current_table->parent;
+        free_symbol_table(temp);
+    }
     ;
 
 switch_statement:
-    SWITCH LPAREN expressao RPAREN LBRACE case_list RBRACE
+    SWITCH LPAREN expressao RPAREN LBRACE case_list RBRACE {
+        $$ = create_node(AST_SWITCH, NULL, NULL, contaLinhas);
+        $$->children = $3;
+        $$->next = $6;
+    }
     ;
 
 case_list:
-    /* vazio */
-    | case_list case_statement
-    | case_list default_statement
+    /* vazio */ { $$ = NULL; }
+    | case_list case_statement { if ($1) $1->next = $2; else $$ = $2; }
+    | case_list default_statement { if ($1) $1->next = $2; else $$ = $2; }
     ;
 
 case_statement:
-    CASE expressao SEMICOLON comandos
+    CASE expressao SEMICOLON comandos {
+        $$ = create_node(AST_CASE, NULL, NULL, contaLinhas);
+        $$->children = $2;
+        $$->next = $4;
+    }
     ;
 
 default_statement:
-    DEFAULT SEMICOLON comandos
+    DEFAULT SEMICOLON comandos {
+        $$ = create_node(AST_DEFAULT, NULL, NULL, contaLinhas);
+        $$->next = $3;
+    }
     ;
 
 comando_break:
-    BREAK SEMICOLON
+    BREAK SEMICOLON { $$ = create_node(AST_BREAK, NULL, NULL, contaLinhas); }
     ;
 
 comando_continue:
-    CONTINUE SEMICOLON
+    CONTINUE SEMICOLON { $$ = create_node(AST_CONTINUE, NULL, NULL, contaLinhas); }
     ;
 
 comando_return:
-    RETURN SEMICOLON
-    | RETURN expressao SEMICOLON
+    RETURN SEMICOLON { $$ = create_node(AST_RETURN, NULL, "void", contaLinhas); }
+    | RETURN expressao SEMICOLON {
+        $$ = create_node(AST_RETURN, NULL, $2->expr_type, contaLinhas);
+        $$->children = $2;
+    }
     ;
 
 loop:
-    WHILE LPAREN expressao RPAREN bloco
-    | FOR LPAREN atribuicao SEMICOLON expressao SEMICOLON atribuicao RPAREN bloco
-    | DO bloco WHILE LPAREN expressao RPAREN SEMICOLON
+    WHILE LPAREN expressao RPAREN bloco {
+        $$ = create_node(AST_WHILE, NULL, NULL, contaLinhas);
+        $$->children = $3;
+        ASTNode *while_block = create_node(AST_BLOCK, NULL, NULL, contaLinhas);
+        while_block->children = $5;
+        $$->next = while_block;
+    }
     ;
 
 %%
@@ -554,15 +646,20 @@ int main(int argc, char **argv) {
     
     if (argc > 1) {
         FILE *file = fopen(argv[1], "r");
-        if (file) {
-            yyin = file;
-        }
+        if (file) yyin = file;
     }
     
     int result = yyparse();
-    if (global_table != NULL) {
-        free_symbol_table(global_table);
+    
+    if (result == 0 && global_table != NULL) {
+        printf("=== TABELA DE SÍMBOLOS ===\n");
+        print_symbol_table(global_table);
+        printf("\n=== ÁRVORE SINTÁTICA ===\n");
+        print_ast(ast_root, 0);
     }
+    
+    if (global_table != NULL) free_symbol_table(global_table);
+    if (ast_root != NULL) free_ast(ast_root);
     
     return result;
 }
