@@ -1,0 +1,27 @@
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+===============================
+
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+main                 int             Função        4          Sim       
+===============================
+
+=== TABELA DE SÍMBOLOS ===
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+===============================
+
+
+=== ÁRVORE SINTÁTICA ===
+Node(PROGRAM, value=null, type=null, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+  Node(FUNCTION_DECL, value=main, type=int, line=4, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(BLOCK, value=null, type=null, line=4, expr_value=0.00, expr_type=null, expr_name=null)
+      Node(RETURN, value=null, type=int, line=3, expr_value=0.00, expr_type=null, expr_name=null)
+        Node(NUM, value=null, type=int, line=3, expr_value=0.00, expr_type=int, expr_name=null)
