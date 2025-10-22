@@ -31,6 +31,7 @@
 "typedef"       { return TYPEDEF; }
 "union"         { return UNION; }
 "volatile"      { return VOLATILE; }
+"else if"       { return ELSEIF; } 
 "if"            { return IF; }
 "else"          { return ELSE; }
 "while"         { return WHILE; }
@@ -41,7 +42,10 @@
 "default"       { return DEFAULT; }
 "break"         { return BREAK; }
 "return"        { return RETURN; }
-
+[0-9]+[a-zA-Z_][a-zA-Z0-9_]* {
+    fprintf(stderr, "Erro Léxico na linha %d: Identificador inválido '%s' não pode começar com um número.\n", contaLinhas, yytext);
+    exit(1);
+}
 [+-]?[0-9]+          { yylval.ival = atoi(yytext); return NUM; }
 [+-]?[0-9]+"."[0-9]+ { yylval.fval = atof(yytext); return FLOAT_NUM; }
 [a-zA-Z_][a-zA-Z0-9_]* { yylval.sval = strdup(yytext); return VAR; }
@@ -78,6 +82,7 @@
 "/*"([^*]|"*"[^/])*"*/" { /* Ignorar comentários de bloco */ }
 \n              { contaLinhas++; }
 [ \t]+          { /* Ignorar espaços em branco */ }
+\"[^"\n]*\"      { yylval.sval = strdup(yytext); return STRING_LITERAL; }
 .               { 
                     fprintf(stderr, "Erro Léxico: Caractere inválido '%s' na linha %d.\n", yytext, contaLinhas); 
                     exit(1); 
