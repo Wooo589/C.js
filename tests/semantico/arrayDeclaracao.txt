@@ -1,0 +1,2 @@
+int arr[10];
+float valores[5];

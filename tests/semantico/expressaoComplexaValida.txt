@@ -1,0 +1,5 @@
+int a = 10;
+int b = 20;
+int c = 30;
+int resultado = a + b - c;
+int outro = resultado * 2;

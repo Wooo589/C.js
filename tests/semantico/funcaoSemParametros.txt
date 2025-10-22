@@ -1,0 +1,4 @@
+int obterValor() {
+    int valor = 42;
+    return valor;
+}

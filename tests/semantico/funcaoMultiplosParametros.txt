@@ -1,0 +1,4 @@
+int calcular(int x, int y, int z) {
+    int resultado = x + y + z;
+    return resultado;
+}

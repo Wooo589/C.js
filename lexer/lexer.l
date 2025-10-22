@@ -58,6 +58,9 @@
 "="             { return ASSIGN; }
 "+="            { return PLUS_ASSIGN; }
 "-="            { return MINUS_ASSIGN; }
+"*="            { return TIMES_ASSIGN; }
+"/="            { return DIVIDE_ASSIGN; }
+"%="            { return MOD_ASSIGN; }
 "=="            { return EQ; }
 "!="            { return NEQ; }
 "<"             { return LT; }
