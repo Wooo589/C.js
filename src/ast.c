@@ -13,7 +13,7 @@ ASTNode *create_node(ASTNodeType type, char *value, char *data_type, int line) {
     node->value = value ? strdup(value) : NULL;
     node->data_type = data_type ? strdup(data_type) : NULL;
     node->line = line;
-    // NOVOS CAMPOS - INICIALIZE AQUI!
+    
     node->expr_value = 0.0;
     node->expr_type = NULL;
     node->expr_name = NULL;
@@ -28,7 +28,6 @@ void free_ast(ASTNode *node) {
     if (!node) return;
     if (node->value) free(node->value);
     if (node->data_type) free(node->data_type);
-    // LIBERE NOVOS CAMPOS
     if (node->expr_type) free(node->expr_type);
     if (node->expr_name) free(node->expr_name);
     free_ast(node->left);
