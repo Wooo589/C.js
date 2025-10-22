@@ -1,1 +1,16 @@
+=== TABELA DE SÍMBOLOS ===
 
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+MAX                  const int       Variável       1          Sim       
+PI                   const float     Variável       2          Sim       
+===============================
+
+
+=== ÁRVORE SINTÁTICA ===
+Node(PROGRAM, value=null, type=null, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+  Node(VAR_DECL, value=MAX, type=const int, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(NUM, value=null, type=int, line=1, expr_value=100.00, expr_type=int, expr_name=null)
+  Node(VAR_DECL, value=PI, type=const float, line=2, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(NUM, value=null, type=float, line=2, expr_value=3.14, expr_type=float, expr_name=null)
