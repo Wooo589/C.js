@@ -657,6 +657,16 @@ int main(int argc, char **argv) {
         printf("\n=== ÁRVORE SINTÁTICA ===\n");
         print_ast(ast_root, 0);
     }
+
+    FILE *ir_file = fopen("outp ut.ir", "w");
+        if (ir_file) {
+            printf("\n=== GERANDO CÓDIGO INTERMEDIÁRIO (output.ir) ===\n");
+            gerar_ir_main(ast_root, global_table, ir_file);
+            fclose(ir_file);
+        } else {
+            fprintf(stderr, "Erro ao abrir arquivo de IR para escrita.\n");
+        }
+        // <<< FIM DA GERAÇÃO DE IR >>>
     
     if (global_table != NULL) free_symbol_table(global_table);
     if (ast_root != NULL) free_ast(ast_root);
