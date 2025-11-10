@@ -1,10 +1,15 @@
 %{
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include "src/ast.h"
 #include "src/symbol_table.h"
+#include "src/intermediate_generator.h"
 
 int yylex(void);
 void yyerror(const char *s);
@@ -658,14 +663,15 @@ int main(int argc, char **argv) {
         print_ast(ast_root, 0);
     }
 
-    FILE *ir_file = fopen("outp ut.ir", "w");
-        if (ir_file) {
-            printf("\n=== GERANDO CÓDIGO INTERMEDIÁRIO (output.ir) ===\n");
-            gerar_ir_main(ast_root, global_table, ir_file);
-            fclose(ir_file);
-        } else {
-            fprintf(stderr, "Erro ao abrir arquivo de IR para escrita.\n");
-        }
+    /* Gera o código intermediário em output.ir */
+    FILE *ir_file = fopen("output.ir", "w");
+    if (ir_file) {
+        printf("\n=== GERANDO CÓDIGO INTERMEDIÁRIO (output.ir) ===\n");
+        gerar_ir_main(ast_root, global_table, ir_file);
+        fclose(ir_file);
+    } else {
+        fprintf(stderr, "Erro ao abrir arquivo de IR para escrita.\n");
+    }
         // <<< FIM DA GERAÇÃO DE IR >>>
     
     if (global_table != NULL) free_symbol_table(global_table);

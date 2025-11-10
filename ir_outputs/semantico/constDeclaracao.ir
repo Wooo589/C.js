@@ -1,0 +1,6 @@
+; --- Início do Código Intermediário ---
+  t0 = 100.000000
+  MAX = t0
+  t1 = 3.140000
+  PI = t1
+; --- Fim do Código Intermediário ---

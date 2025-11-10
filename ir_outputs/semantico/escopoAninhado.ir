@@ -1,0 +1,8 @@
+; --- Início do Código Intermediário ---
+  t0 = 10.000000
+  x = t0
+  t1 = 20.000000
+  y = t1
+  t2 = x + y
+  z = t2
+; --- Fim do Código Intermediário ---

@@ -1,0 +1,10 @@
+; --- Início do Código Intermediário ---
+
+func soma
+  recv_param a
+  recv_param b
+  t0 = a + b
+  resultado = t0
+  return resultado
+end func soma
+; --- Fim do Código Intermediário ---

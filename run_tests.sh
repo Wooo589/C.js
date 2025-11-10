@@ -8,7 +8,8 @@ WHITE='\033[1;37m'
 NC='\033[0m' # No Color
 
 TEST_DIR="tests"
-COMPILER_EXEC="./a.out"
+# Executável gerado pelo Makefile
+COMPILER_EXEC="./c_parser"
 PASSED_COUNT=0
 FAILED_COUNT=0
 TOTAL_TESTS=0

@@ -44,7 +44,8 @@ static char* gerarIR_no(ASTNode *no, FILE *saida, SymbolTable *escopo,
         }
 
         case AST_EXPR_VAR: {
-            result = strdup(no->expr_name);
+            if (no->value) result = strdup(no->value);
+            else result = NULL;
             break;
         }
 
