@@ -1,9 +1,7 @@
 <!-- docs/_navbar.md -->
 
-* Estrutura do projeto
+* [Escopo do projeto](navItems/escopo.md)
 
-* Decisões técnicas
+* [Decisões técnicas](navItems/comecar.md)
 
 * [Sprints](navItems/sprints.md)  
-
-* Problemas e suas soluções
