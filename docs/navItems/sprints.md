@@ -16,49 +16,155 @@
 
 #### Ata 17/09
 
-| Data | Horário | Plataforma | Participantes | Link |
+| Data | Horário | Local | Participantes | Link |
 | :------: | :-------: | :----------: | -------- | :----------: |
 | 17/09/2025 | 21h | Microsoft Teams | <ul><li>[`@Leandro`](https://github.com/LeanArs)</li><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li><li>[`@Yan`](https://github.com/Yanmatheus0812)</li></ul> | |
 
-Inserir pauta
+<h5>Assuntos discutidos</h5>
+
+- assunto discutido 1;
+- assunto discutido 2.
+
+<h5>Deliberações</h5>
+
+- deliberação 1;
+- deliberação 2.
+
+<h5>Ações e responsáveis:</h5>
+
+| Ação | Responsável |
+| ---- | ----------- |
+| [`@Willian`](https://github.com/Wooo589)|  |
+| [`@Lucas`](https://github.com/LucasAlves71) e [`@Renan`](https://github.com/renantfm4) |  |
+| [`@Leandro`](https://github.com/LeanArs) e [`@Yan`](https://github.com/Yanmatheus0812) |  |
 
 ### Sprint 2
 
 #### Ata 26/09
 
-| Data | Horário | Plataforma | Participantes | Link |
+| Data | Horário | Local | Participantes | Link |
 | :------: | :-------: | :----------: | -------- | :----------: |
 | 26/09/2025 | 21h | Microsoft Teams | <ul><li>[`@Leandro`](https://github.com/LeanArs)</li><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li><li>[`@Yan`](https://github.com/Yanmatheus0812)</li></ul> | |
 
-Inserir pauta
+<h5>Assuntos discutidos</h5>
+
+- assunto discutido 1;
+- assunto discutido 2.
+
+<h5>Deliberações</h5>
+
+- deliberação 1;
+- deliberação 2.
+
+<h5>Ações e responsáveis:</h5>
+
+| Ação | Responsável |
+| ---- | ----------- |
+| [`@Willian`](https://github.com/Wooo589)|  |
+| [`@Lucas`](https://github.com/LucasAlves71) e [`@Renan`](https://github.com/renantfm4) |  |
+| [`@Leandro`](https://github.com/LeanArs) e [`@Yan`](https://github.com/Yanmatheus0812) |  |
 
 ### Sprint 3
 
 #### Ata 01/10
 
-| Data | Horário | Plataforma | Participantes | Link |
+| Data | Horário | Local | Participantes | Link |
 | :------: | :-------: | :----------: | -------- | :----------: |
 | 01/10/2025 | 21h | Microsoft Teams | <ul><li>[`@Leandro`](https://github.com/LeanArs)</li><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li></ul> | |
 
-Inserir pauta
+<h5>Assuntos discutidos</h5>
+
+- assunto discutido 1;
+- assunto discutido 2.
+
+<h5>Deliberações</h5>
+
+- deliberação 1;
+- deliberação 2.
+
+<h5>Ações e responsáveis:</h5>
+
+| Ação | Responsável |
+| ---- | ----------- |
+| [`@Willian`](https://github.com/Wooo589)|  |
+| [`@Lucas`](https://github.com/LucasAlves71) e [`@Renan`](https://github.com/renantfm4) |  |
+| [`@Leandro`](https://github.com/LeanArs) e [`@Yan`](https://github.com/Yanmatheus0812) |  |
 
 #### Ata 08/10
 
-| Data | Horário | Plataforma | Participantes | Link |
+| Data | Horário | Local | Participantes | Link |
 | :------: | :-------: | :----------: | -------- | :----------: |
 | 08/10/2025 | 21h | Microsoft Teams | <ul><li>[`@Leandro`](https://github.com/LeanArs)</li><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li><li>[`@Yan`](https://github.com/Yanmatheus0812)</li></ul> | |
 
-Inserir pauta
+<h5>Assuntos discutidos</h5>
+
+- assunto discutido 1;
+- assunto discutido 2.
+
+<h5>Deliberações</h5>
+
+- deliberação 1;
+- deliberação 2.
+
+<h5>Ações e responsáveis:</h5>
+
+| Ação | Responsável |
+| ---- | ----------- |
+| [`@Willian`](https://github.com/Wooo589)|  |
+| [`@Lucas`](https://github.com/LucasAlves71) e [`@Renan`](https://github.com/renantfm4) |  |
+| [`@Leandro`](https://github.com/LeanArs) e [`@Yan`](https://github.com/Yanmatheus0812) |  |
 
 ### Sprint 4
 
 #### Ata 15/10
 
-| Data | Horário | Plataforma | Participantes | Link |
+| Data | Horário | Local | Participantes | Link |
 | :------: | :-------: | :----------: | -------- | :----------: |
 | 15/10/2025 | 20h | Microsoft Teams | <ul><li>[`@Leandro`](https://github.com/LeanArs)</li><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li><li>[`@Yan`](https://github.com/Yanmatheus0812)</li></ul> | |
 
-Inserir pauta
+<h5>Assuntos discutidos</h5>
+
+- assunto discutido 1;
+- assunto discutido 2.
+
+<h5>Deliberações</h5>
+
+- deliberação 1;
+- deliberação 2.
+
+<h5>Ações e responsáveis:</h5>
+
+| Ação | Responsável |
+| ---- | ----------- |
+| [`@Willian`](https://github.com/Wooo589)|  |
+| [`@Lucas`](https://github.com/LucasAlves71) e [`@Renan`](https://github.com/renantfm4) |  |
+| [`@Leandro`](https://github.com/LeanArs) e [`@Yan`](https://github.com/Yanmatheus0812) |  |
+
+#### Ata 22/10
+
+| Data | Horário | Local | Participantes |
+| :------: | :-------: | :----------: | -------- |
+| 22/10/2025 | 14h | Presencial na faculdade | <ul><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li><li>[`@Yan`](https://github.com/Yanmatheus0812)</li></ul> | 
+
+<h5>Assuntos discutidos</h5>
+
+- Mudanças no cronograma do projeto;
+- Progresso do analisador semântico;
+- Resolução dos impasses na geração do código intermediário.
+
+<h5>Deliberações</h5>
+
+- Cronograma será ajustado;
+- Atualizações do analisador semântico serão enviadas para uma branch separada no repositório;
+- Equipe responsável pela geração do código intermediário permanecerá a mesma.
+
+<h5>Ações e responsáveis:</h5>
+
+| Ação | Responsável |
+| ---- | ----------- |
+| [`@Willian`](https://github.com/Wooo589)| Atualizar cronograma e apoio nas tarefas |
+| [`@Lucas`](https://github.com/LucasAlves71) e [`@Renan`](https://github.com/renantfm4) | Subir alterações do analisador semântico |
+| [`@Leandro`](https://github.com/LeanArs) e [`@Yan`](https://github.com/Yanmatheus0812) | Dar continuidade ao gerador de código intermediário |
 
 ## Histórico de versão
 
