@@ -1,0 +1,12 @@
+; --- Início do Código Intermediário ---
+
+func calcular
+  recv_param x
+  recv_param z
+  recv_param y
+  t0 = x + y
+  t1 = t0 + z
+  resultado = t1
+  return t1
+end func calcular
+; --- Fim do Código Intermediário ---
