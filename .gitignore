@@ -1,6 +1,14 @@
+# Arquivos de build
+*.o
+a.out
+
 # Arquivos gerados pelo Flex
 lex.yy.c
 
 # Arquivos gerados pelo Bison
 parser.tab.c
 parser.tab.h
+parser.output
+
+# Executáveis
+c_parser

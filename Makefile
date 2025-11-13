@@ -1,5 +1,5 @@
 # Nome do executável final
-EXEC = parser
+EXEC = c_parser
 
 # Diretórios
 BISON_DIR = parser
@@ -17,8 +17,12 @@ BISON_H   = parser.tab.h
 # Arquivo gerado pelo Flex
 FLEX_C    = lex.yy.c
 
-# Fonte principal
-MAIN_C = $(SRC_DIR)/main.c
+# Fonte principal e tabela de símbolos
+SYMBOL_TABLE_C = $(SRC_DIR)/symbol_table.c
+SYMBOL_TABLE_H = $(SRC_DIR)/symbol_table.h
+AST_C = $(SRC_DIR)/ast.c
+AST_H = $(SRC_DIR)/ast.h
+INTERMEDIATE_C = $(SRC_DIR)/intermediate_generator.c
 
 # Parâmetros opcionais ao Bison e Flex
 BISON_FLAGS = -d   # -d gera o arquivo .h (token definitions)
@@ -26,15 +30,15 @@ FLEX_FLAGS  =      # deixe vazio ou acrescente opções, se necessário
 
 # Parâmetros de compilação
 CC      = gcc
-CFLAGS  =
-LDFLAGS = -lfl     # biblioteca do Flex (em algumas distros, pode ser -ll)
+CFLAGS  = -I$(SRC_DIR)
+LDFLAGS = -lm     # biblioteca matemática
 
 # Regra padrão (alvo 'all' vai gerar o executável)
 all: $(EXEC)
 
 # Regra para gerar o executável: depende dos arquivos gerados por Bison e Flex
-$(EXEC): $(BISON_C) $(FLEX_C)
-	$(CC) $(CFLAGS) -o $@ $(BISON_C) $(FLEX_C) $(LDFLAGS)
+$(EXEC): $(BISON_C) $(FLEX_C) $(SYMBOL_TABLE_C) $(AST_C) $(INTERMEDIATE_C)
+	$(CC) $(CFLAGS) -o $@ $(BISON_C) $(FLEX_C) $(SYMBOL_TABLE_C) $(AST_C) $(INTERMEDIATE_C) $(LDFLAGS)
 
 # Regra para rodar o Bison: gera parser.tab.c e parser.tab.h
 $(BISON_C) $(BISON_H): $(BISON_FILE)

@@ -1,0 +1,6 @@
+; --- Início do Código Intermediário ---
+  t0 = 42.000000
+  inteiro = t0
+  t1 = 2.718280
+  preciso = t1
+; --- Fim do Código Intermediário ---

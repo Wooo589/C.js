@@ -1,0 +1,10 @@
+; --- Início do Código Intermediário ---
+  t0 = 10.000000
+  x = t0
+  t2 = 5.000000
+  t3 = 5.000000
+  param x
+  param t3
+  t1 = call calcular, 2
+  y = t1
+; --- Fim do Código Intermediário ---

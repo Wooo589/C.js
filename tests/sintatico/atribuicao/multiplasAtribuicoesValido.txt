@@ -1,0 +1,4 @@
+int x = 10;
+int c = 2;
+int d = 2;
+int a = 2;

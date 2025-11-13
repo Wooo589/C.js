@@ -1,0 +1,11 @@
+; --- Início do Código Intermediário ---
+  t0 = 1.000000
+  a = t0
+  t1 = 2.000000
+  b = t1
+  t2 = 3.000000
+  c = t2
+  t3 = a + b
+  t4 = t3 + c
+  d = t4
+; --- Fim do Código Intermediário ---

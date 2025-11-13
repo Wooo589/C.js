@@ -1,0 +1,16 @@
+=== TABELA DE SÍMBOLOS ===
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+arr                  int[]           Variável       1          Sim       
+valores              float[]         Variável       2          Sim       
+===============================
+
+
+=== ÁRVORE SINTÁTICA ===
+Node(PROGRAM, value=null, type=null, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+  Node(VAR_DECL, value=arr, type=int[], line=1, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(NUM, value=null, type=int, line=1, expr_value=10.00, expr_type=int, expr_name=null)
+  Node(VAR_DECL, value=valores, type=float[], line=2, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(NUM, value=null, type=int, line=2, expr_value=5.00, expr_type=int, expr_name=null)

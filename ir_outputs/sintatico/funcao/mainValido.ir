@@ -1,0 +1,7 @@
+; --- Início do Código Intermediário ---
+
+func main
+  t0 = 0.000000
+  return t0
+end func main
+; --- Fim do Código Intermediário ---

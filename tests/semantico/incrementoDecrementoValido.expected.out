@@ -1,0 +1,16 @@
+=== TABELA DE SÍMBOLOS ===
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+x                    int             Variável       1          Sim       
+===============================
+
+
+=== ÁRVORE SINTÁTICA ===
+Node(PROGRAM, value=null, type=null, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+  Node(VAR_DECL, value=x, type=int, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(NUM, value=null, type=int, line=1, expr_value=10.00, expr_type=int, expr_name=null)
+  Node(ASSIGNMENT, value=x, type=null, line=5, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(BINARY_OP, value=--, type=int, line=5, expr_value=0.00, expr_type=null, expr_name=null)
+      Node(VAR, value=x, type=int, line=5, expr_value=0.00, expr_type=null, expr_name=null)

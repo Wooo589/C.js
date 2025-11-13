@@ -1,0 +1,16 @@
+=== TABELA DE SÍMBOLOS ===
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+a                    int             Variável       1          Não      
+b                    float           Variável       2          Não      
+c                    double          Variável       3          Não      
+d                    char            Variável       4          Não      
+===============================
+
+
+=== ÁRVORE SINTÁTICA ===
+Node(PROGRAM, value=null, type=null, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+  Node(VAR_DECL, value=a, type=int, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+  Node(VAR_DECL, value=d, type=char, line=4, expr_value=0.00, expr_type=null, expr_name=null)
