@@ -1,0 +1,5 @@
+; --- Início do Código Intermediário ---
+  t3 = 12.000000
+  t4 = 2.000000 + t3
+  x = t4
+; --- Fim do Código Intermediário ---

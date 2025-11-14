@@ -1,6 +1,6 @@
 set -euo pipefail
 
-TEST_DIR=${1:-tests/semantico}
+TEST_DIR=${1:-tests/otimizacao}
 OUT_DIR=${2:-ir_outputs}
 
 mkdir -p "$OUT_DIR"

@@ -22,6 +22,8 @@ typedef struct Symbol {
     SymbolType symbol_type;  // Tipo do símbolo (variável, função, etc.)
     int line;                // Linha onde foi declarado
     int initialized;         // Flag para verificar se foi inicializado
+    int is_constant;         // Para verificar se é uma constante
+    double constant_value;   // Valor da constante
     struct Symbol *next;     // Para tratar colisões (encadeamento)
 } Symbol;
 
@@ -59,4 +61,5 @@ void print_symbol_table(SymbolTable *table);
 // Atualizar o flag de inicialização de uma variável
 int update_symbol_initialization(SymbolTable *table, const char *name);
 
+extern SymbolTable *global_table;
 #endif // SYMBOL_TABLE_H

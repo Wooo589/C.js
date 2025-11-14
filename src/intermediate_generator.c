@@ -127,6 +127,13 @@ static void pass_constant_folding() {
                     char buf[64]; snprintf(buf, sizeof(buf), "%f", res);
                     it->arg1 = strdup(buf);
                 }
+            } else {
+                Symbol *sa = lookup_symbol(global_table, it->arg1);
+                if (sa && sa->is_constant) {
+                    char buf[64]; snprintf(buf, sizeof(buf), "%f", sa->constant_value);
+                    free(it->arg1); it->arg1 = strdup(buf);
+                    a = sa->constant_value;
+                }
             }
         }
     }
@@ -146,8 +153,9 @@ static void pass_copy_propagation() {
         if (it->arg1) { const char *r = map_resolve(it->arg1); if (r) { free(it->arg1); it->arg1 = strdup(r); } }
         if (it->arg2) { const char *r = map_resolve(it->arg2); if (r) { free(it->arg2); it->arg2 = strdup(r); } }
         if (it->kind == INST_ASSIGN && it->dest && it->arg1) {
-            double tmp; if (!is_number_str(it->arg1, &tmp)) { map_set(it->dest, it->arg1); } else { map_unset(it->dest); } continue;
-        }
+    map_set(it->dest, it->arg1);
+    continue;
+}
         if ((it->kind == INST_BINARY || it->kind == INST_CALL || it->kind == INST_ASSIGN) && it->dest) { map_unset(it->dest); }
     }
     map_clear();
@@ -216,7 +224,15 @@ static char* gerarIR_no(ASTNode *no, SymbolTable *escopo, const char *breakLabel
     ASTNode *proximo_no_lista = no->next;
 
     switch (no->type) {
-        case AST_EXPR_NUM: { result = novaTemp(); char buf[64]; snprintf(buf, sizeof(buf), "%f", no->expr_value); emit_assign(result, buf); break; }
+        case AST_EXPR_NUM: {
+            result = novaTemp();
+            char buf[64]; snprintf(buf, sizeof(buf), "%f", no->expr_value);
+            emit_assign(result, buf);
+            insert_symbol(global_table, result, no->expr_type ? no->expr_type : "float", SYMBOL_VARIABLE, no->line, 1);
+            Symbol *st = lookup_symbol(global_table, result);
+            if (st) { st->is_constant = 1; st->constant_value = no->expr_value; }
+            break;
+        }
         case AST_EXPR_VAR: { if (no->value) result = strdup(no->value); break; }
         case AST_EXPR_BINARY: {
             char *left = gerarIR_no(no->left, escopo, breakLabel, continueLabel);
@@ -271,8 +287,8 @@ void gerar_ir_main(ASTNode *ast_root, SymbolTable *global_table, FILE *saida) {
     ir_clear(); temp_count = 0; label_count = 0;
     gerarIR_no(ast_root, global_table, NULL, NULL);
     // run passes
-    pass_constant_folding();
     pass_copy_propagation();
+    pass_constant_folding();
     pass_dead_code_elimination();
     // emit
     ir_emit_to_file(saida);
