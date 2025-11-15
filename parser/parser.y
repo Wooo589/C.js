@@ -35,10 +35,10 @@ ASTNode *ast_root = NULL;
 %token <sval> VAR CHAR STRING_LITERAL
 %token <ival> INT FLOAT DOUBLE VOID
 %token CONST SHORT LONG SIGNED UNSIGNED ASSIGN
-%token PLUS MINUS TIMES DIVIDE MOD POWER SEMICOLON LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET COMMA
+%token PLUS MINUS TIMES DIVIDE MOD POWER SEMICOLON COLON LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET COMMA
 %token EQ NEQ LT GT LEQ GEQ AND OR NOT
 %token PLUS_ASSIGN MINUS_ASSIGN TIMES_ASSIGN DIVIDE_ASSIGN MOD_ASSIGN INCREMENT DECREMENT ARROW
-%token IF ELSE ELSEIF WHILE FOR DO SWITCH CASE DEFAULT BREAK CONTINUE RETURN
+%token IF ELSE WHILE FOR DO SWITCH CASE DEFAULT BREAK CONTINUE RETURN
 %token AUTO ENUM EXTERN REGISTER SIZEOF STATIC STRUCT TYPEDEF UNION VOLATILE
 
 %type <ast> programa programa_corpo declaracao_funcao bloco comandos comando declaracao atribuicao expressao
@@ -462,21 +462,21 @@ expressao:
         $$->left = $1;
         $$->right = $3;
         $$->expr_value = $1->expr_value + $3->expr_value;
-        free($1->expr_type); free($3->expr_type);
+        
     }
     | expressao MINUS expressao {
         $$ = create_node(AST_EXPR_BINARY, "-", $1->expr_type ? $1->expr_type : "float", contaLinhas);
         $$->left = $1;
         $$->right = $3;
         $$->expr_value = $1->expr_value - $3->expr_value;
-        free($1->expr_type); free($3->expr_type);
+        
     }
     | expressao TIMES expressao {
         $$ = create_node(AST_EXPR_BINARY, "*", $1->expr_type ? $1->expr_type : "float", contaLinhas);
         $$->left = $1;
         $$->right = $3;
         $$->expr_value = $1->expr_value * $3->expr_value;
-        free($1->expr_type); free($3->expr_type);
+        
     }
     | expressao DIVIDE expressao {
         if ($3->expr_value == 0) {
@@ -487,7 +487,74 @@ expressao:
         $$->left = $1;
         $$->right = $3;
         $$->expr_value = $1->expr_value / $3->expr_value;
-        free($1->expr_type); free($3->expr_type);
+        
+    }
+    | expressao MOD expressao {
+        $$ = create_node(AST_EXPR_BINARY, "%", $1->expr_type ? $1->expr_type : "int", contaLinhas);
+        $$->left = $1;
+        $$->right = $3;
+        
+    }
+    | expressao EQ expressao {
+        $$ = create_node(AST_EXPR_BINARY, "==", "int", contaLinhas);
+        $$->left = $1;
+        $$->right = $3;
+        $$->expr_type = strdup("int");
+        
+    }
+    | expressao NEQ expressao {
+        $$ = create_node(AST_EXPR_BINARY, "!=", "int", contaLinhas);
+        $$->left = $1;
+        $$->right = $3;
+        $$->expr_type = strdup("int");
+        
+    }
+    | expressao LT expressao {
+        $$ = create_node(AST_EXPR_BINARY, "<", "int", contaLinhas);
+        $$->left = $1;
+        $$->right = $3;
+        $$->expr_type = strdup("int");
+        
+    }
+    | expressao GT expressao {
+        $$ = create_node(AST_EXPR_BINARY, ">", "int", contaLinhas);
+        $$->left = $1;
+        $$->right = $3;
+        $$->expr_type = strdup("int");
+        
+    }
+    | expressao LEQ expressao {
+        $$ = create_node(AST_EXPR_BINARY, "<=", "int", contaLinhas);
+        $$->left = $1;
+        $$->right = $3;
+        $$->expr_type = strdup("int");
+        
+    }
+    | expressao GEQ expressao {
+        $$ = create_node(AST_EXPR_BINARY, ">=", "int", contaLinhas);
+        $$->left = $1;
+        $$->right = $3;
+        $$->expr_type = strdup("int");
+        
+    }
+    | expressao AND expressao {
+        $$ = create_node(AST_EXPR_BINARY, "&&", "int", contaLinhas);
+        $$->left = $1;
+        $$->right = $3;
+        $$->expr_type = strdup("int");
+        
+    }
+    | expressao OR expressao {
+        $$ = create_node(AST_EXPR_BINARY, "||", "int", contaLinhas);
+        $$->left = $1;
+        $$->right = $3;
+        $$->expr_type = strdup("int");
+        
+    }
+    | NOT expressao %prec UNARY {
+        $$ = create_node(AST_EXPR_BINARY, "!", "int", contaLinhas);
+        $$->left = $2;
+        $$->expr_type = strdup("int");
     }
     | NUM { 
         $$ = create_node(AST_EXPR_NUM, NULL, "int", contaLinhas);
@@ -558,6 +625,14 @@ condicao:
         else_block->children = $7;
         if_block->next = else_block;
     }
+    | IF LPAREN expressao RPAREN bloco ELSE condicao {
+        $$ = create_node(AST_IF, NULL, NULL, contaLinhas);
+        $$->children = $3;
+        ASTNode *if_block = create_node(AST_BLOCK, NULL, NULL, contaLinhas);
+        if_block->children = $5;
+        $$->next = if_block;
+        if_block->next = $7;
+    }
     ;
 
 bloco:
@@ -596,7 +671,7 @@ case_list:
     ;
 
 case_statement:
-    CASE expressao SEMICOLON comandos {
+    CASE expressao COLON comandos {
         $$ = create_node(AST_CASE, NULL, NULL, contaLinhas);
         $$->children = $2;
         $$->next = $4;
@@ -604,7 +679,7 @@ case_statement:
     ;
 
 default_statement:
-    DEFAULT SEMICOLON comandos {
+    DEFAULT COLON comandos {
         $$ = create_node(AST_DEFAULT, NULL, NULL, contaLinhas);
         $$->next = $3;
     }
@@ -633,6 +708,31 @@ loop:
         ASTNode *while_block = create_node(AST_BLOCK, NULL, NULL, contaLinhas);
         while_block->children = $5;
         $$->next = while_block;
+    }
+    | FOR LPAREN declaracao SEMICOLON expressao SEMICOLON atribuicao RPAREN bloco {
+        $$ = create_node(AST_FOR, NULL, NULL, contaLinhas);
+        $$->children = $3;
+        $3->next = $5;
+        $5->next = $7;
+        $7->next = $9;
+    }
+    | FOR LPAREN atribuicao SEMICOLON expressao SEMICOLON atribuicao RPAREN bloco {
+        $$ = create_node(AST_FOR, NULL, NULL, contaLinhas);
+        $$->children = $3;
+        $3->next = $5;
+        $5->next = $7;
+        $7->next = $9;
+    }
+    | FOR LPAREN SEMICOLON expressao SEMICOLON atribuicao RPAREN bloco {
+        $$ = create_node(AST_FOR, NULL, NULL, contaLinhas);
+        $$->children = $4;
+        $4->next = $6;
+        $6->next = $8;
+    }
+    | DO bloco WHILE LPAREN expressao RPAREN SEMICOLON {
+        $$ = create_node(AST_WHILE, NULL, NULL, contaLinhas);
+        $$->children = $5;
+        $$->next = $2;
     }
     ;
 
@@ -666,13 +766,11 @@ int main(int argc, char **argv) {
     /* Gera o código intermediário em output.ir */
     FILE *ir_file = fopen("output.ir", "w");
     if (ir_file) {
-        printf("\n=== GERANDO CÓDIGO INTERMEDIÁRIO (output.ir) ===\n");
         gerar_ir_main(ast_root, global_table, ir_file);
         fclose(ir_file);
     } else {
         fprintf(stderr, "Erro ao abrir arquivo de IR para escrita.\n");
     }
-        // <<< FIM DA GERAÇÃO DE IR >>>
     
     if (global_table != NULL) free_symbol_table(global_table);
     if (ast_root != NULL) free_ast(ast_root);

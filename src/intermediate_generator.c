@@ -226,6 +226,48 @@ static char* gerarIR_no(ASTNode *no, FILE *saida, SymbolTable *escopo,
             break;
         }
 
+        case AST_FOR: {
+            char *label_inicio = novoLabel();
+            char *label_fim = novoLabel();
+            char *label_incremento = novoLabel();
+            
+            ASTNode *init = no->children;
+            ASTNode *cond = init ? init->next : NULL;
+            ASTNode *increment = cond ? cond->next : NULL;
+            ASTNode *body = increment ? increment->next : NULL;
+            
+            if (init) {
+                gerarIR_no(init, saida, escopo, breakLabel, continueLabel);
+            }
+            
+            fprintf(saida, "%s:\n", label_inicio);
+            
+            if (cond) {
+                char *cond_temp = gerarIR_no(cond, saida, escopo, breakLabel, continueLabel);
+                fprintf(saida, "  ifFalse %s goto %s\n", cond_temp, label_fim);
+                free(cond_temp);
+            }
+            
+            if (body) {
+                gerarIR_no(body, saida, escopo, label_fim, label_incremento);
+            }
+            
+            fprintf(saida, "%s:\n", label_incremento);
+            if (increment) {
+                gerarIR_no(increment, saida, escopo, breakLabel, continueLabel);
+            }
+            
+            fprintf(saida, "  goto %s\n", label_inicio);
+            fprintf(saida, "%s:\n", label_fim);
+            
+            free(label_inicio);
+            free(label_fim);
+            free(label_incremento);
+
+            proximo_no_lista = body ? body->next : NULL;
+            break;
+        }
+
         case AST_SWITCH: {
             char *label_end_switch = novoLabel();
             char *label_default = NULL;

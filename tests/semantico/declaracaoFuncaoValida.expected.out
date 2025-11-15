@@ -1,1 +1,36 @@
 
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+===============================
+
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+soma                 int             Função        4          Sim       
+===============================
+
+=== TABELA DE SÍMBOLOS ===
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+a                    int             Parâmetro      1          Sim       
+b                    int             Parâmetro      1          Sim       
+resultado            int             Variável       2          Sim       
+===============================
+
+
+=== ÁRVORE SINTÁTICA ===
+Node(PROGRAM, value=null, type=null, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+  Node(FUNCTION_DECL, value=soma, type=int, line=4, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(PARAMETER, value=a, type=int, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(PARAMETER, value=b, type=int, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(BLOCK, value=null, type=null, line=4, expr_value=0.00, expr_type=null, expr_name=null)
+      Node(VAR_DECL, value=resultado, type=int, line=2, expr_value=0.00, expr_type=null, expr_name=null)
+        Node(BINARY_OP, value=+, type=int, line=2, expr_value=0.00, expr_type=null, expr_name=null)
+          Node(VAR, value=a, type=int, line=2, expr_value=0.00, expr_type=int, expr_name=a)
+          Node(VAR, value=b, type=int, line=2, expr_value=0.00, expr_type=int, expr_name=b)
+      Node(RETURN, value=null, type=int, line=3, expr_value=0.00, expr_type=null, expr_name=null)
+        Node(VAR, value=resultado, type=int, line=3, expr_value=0.00, expr_type=int, expr_name=resultado)

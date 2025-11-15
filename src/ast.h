@@ -13,6 +13,7 @@ typedef enum {
     AST_IF,
     AST_ELSE,
     AST_WHILE,
+    AST_FOR,
     AST_SWITCH,
     AST_CASE,
     AST_DEFAULT,

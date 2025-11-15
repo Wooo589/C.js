@@ -51,6 +51,7 @@ void print_ast(ASTNode *node, int level) {
         case AST_IF: type_str = "IF"; break;
         case AST_ELSE: type_str = "ELSE"; break;
         case AST_WHILE: type_str = "WHILE"; break;
+        case AST_FOR: type_str = "FOR"; break;
         case AST_SWITCH: type_str = "SWITCH"; break;
         case AST_CASE: type_str = "CASE"; break;
         case AST_DEFAULT: type_str = "DEFAULT"; break;
