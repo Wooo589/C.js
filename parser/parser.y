@@ -182,6 +182,15 @@ declaracao:
         insert_symbol(current_table, $2, $1, SYMBOL_VARIABLE, contaLinhas, 1);
         $$ = create_node(AST_VARIABLE_DECLARATION, $2, $1, contaLinhas);
         $$->children = $4;
+
+        if ($4 && $4->is_constant) {
+        Symbol *s = lookup_symbol(current_table, $2);
+        if (s) {
+                s->is_constant = 1;
+                s->constant_value = $4->const_value;
+            }
+        }
+
         free($1); free($2);
     }
     | tipo VAR LBRACKET expressao RBRACKET {
@@ -240,6 +249,15 @@ atribuicao:
             YYERROR;
         }
         update_symbol_initialization(current_table, $1);
+        Symbol *sym = lookup_symbol(current_table, $1);
+        if (sym) {
+            if ($3 && $3->is_constant) {
+                sym->is_constant = 1;
+                sym->constant_value = $3->const_value;
+            } else {
+                sym->is_constant = 0;
+            }
+        }
         $$ = create_node(AST_ASSIGNMENT, $1, NULL, contaLinhas);
         $$->children = $3;
         free($1);
@@ -463,6 +481,13 @@ expressao:
         $$->right = $3;
         $$->expr_value = $1->expr_value + $3->expr_value;
         free($1->expr_type); free($3->expr_type);
+
+        if ($1->is_constant && $3->is_constant) {
+            $$->is_constant = 1;
+            $$->const_value = $1->const_value + $3->const_value;
+        } else {
+            $$->is_constant = 0;
+        }
     }
     | expressao MINUS expressao {
         $$ = create_node(AST_EXPR_BINARY, "-", $1->expr_type ? $1->expr_type : "float", contaLinhas);
@@ -493,27 +518,39 @@ expressao:
         $$ = create_node(AST_EXPR_NUM, NULL, "int", contaLinhas);
         $$->expr_value = $1;
         $$->expr_type = strdup("int");
+        $$->is_constant = 1;
+        $$->const_value = (double)$1;
+        $$->is_constant = 1;
+        $$->const_value = (double)$1;
     }
     | FLOAT_NUM { 
         $$ = create_node(AST_EXPR_NUM, NULL, "float", contaLinhas);
         $$->expr_value = $1;
         $$->expr_type = strdup("float");
     }
-    | VAR { 
-        Symbol *symbol = lookup_symbol(current_table, $1);
-        if (symbol == NULL) {
-            char error_msg[256];
-            snprintf(error_msg, sizeof(error_msg), 
-                    "Erro semântico na linha %d: Variável '%s' não foi declarada", 
-                    contaLinhas, $1);
-            yyerror(error_msg);
-            YYERROR;
-        }
-        $$ = create_node(AST_EXPR_VAR, $1, symbol->type, contaLinhas);
-        $$->expr_type = strdup(symbol->type);
-        $$->expr_name = strdup($1);
-        free($1);
+    | VAR {
+    Symbol *symbol = lookup_symbol(current_table, $1);
+    if (symbol == NULL) {
+        char error_msg[256];
+        snprintf(error_msg, sizeof(error_msg),
+                "Erro semântico na linha %d: Variável '%s' não foi declarada",
+                contaLinhas, $1);
+        yyerror(error_msg);
+        YYERROR;
     }
+
+    $$ = create_node(AST_EXPR_VAR, $1, strdup(symbol->type), contaLinhas);
+    $$->expr_type = strdup(symbol->type);
+
+    if (symbol->is_constant) {
+        $$->is_constant = 1;
+        $$->const_value = symbol->constant_value;
+    } else {
+        $$->is_constant = 0;
+    }
+
+    free($1);
+}
     | VAR LPAREN argumentos RPAREN { 
         Symbol *symbol = lookup_symbol(current_table, $1);
         if (symbol == NULL) {
@@ -656,17 +693,10 @@ int main(int argc, char **argv) {
     
     int result = yyparse();
     
-    if (result == 0 && global_table != NULL) {
-        printf("=== TABELA DE SÍMBOLOS ===\n");
-        print_symbol_table(global_table);
-        printf("\n=== ÁRVORE SINTÁTICA ===\n");
-        print_ast(ast_root, 0);
-    }
 
     /* Gera o código intermediário em output.ir */
     FILE *ir_file = fopen("output.ir", "w");
     if (ir_file) {
-        printf("\n=== GERANDO CÓDIGO INTERMEDIÁRIO (output.ir) ===\n");
         gerar_ir_main(ast_root, global_table, ir_file);
         fclose(ir_file);
     } else {
