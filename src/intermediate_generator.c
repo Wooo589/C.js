@@ -162,24 +162,35 @@ static void pass_copy_propagation() {
 }
 
 // Dead code elimination: remove instructions that assign to temporaries (t*) never used
+typedef struct Use { char *name; int count; struct Use *next; } Use;
+
+static void use_add(Use **uses_ptr, const char *n) {
+    if (!n) return; if (n[0]=='\0') return;
+    Use *it = *uses_ptr;
+    while (it) { if (strcmp(it->name, n) == 0) { it->count++; return; } it = it->next; }
+    Use *e = (Use*)calloc(1, sizeof(Use)); e->name = strdup(n); e->count = 1; e->next = *uses_ptr; *uses_ptr = e;
+}
+
+static int use_count(Use *uses, const char *name) {
+    for (Use *u = uses; u; u = u->next) if (strcmp(u->name, name) == 0) return u->count;
+    return 0;
+}
+
+static void use_free_all(Use **uses_ptr) {
+    Use *u = *uses_ptr;
+    while (u) { Use *nx = u->next; free(u->name); free(u); u = nx; }
+    *uses_ptr = NULL;
+}
+
 static void pass_dead_code_elimination() {
-    typedef struct Use { char *name; int count; struct Use *next; } Use;
     Use *uses = NULL;
-    // helper to add
-    void use_add(Use **uses_ptr, const char *n) {
-        if (!n) return; if (n[0]=='\0') return;
-        Use *it = *uses_ptr;
-        while (it) { if (strcmp(it->name, n) == 0) { it->count++; return; } it = it->next; }
-        Use *e = (Use*)calloc(1, sizeof(Use)); e->name = strdup(n); e->count = 1; e->next = *uses_ptr; *uses_ptr = e;
-    }
     for (Instr *it = ir_head; it; it = it->next) { if (it->arg1) use_add(&uses, it->arg1); if (it->arg2) use_add(&uses, it->arg2); }
     Instr **pp = &ir_head;
     while (*pp) {
         Instr *cur = *pp;
         int removable = 0;
         if (cur->dest && cur->dest[0]=='t') {
-            int count = 0;
-            for (Use *u = uses; u; u = u->next) if (strcmp(u->name, cur->dest) == 0) { count = u->count; break; }
+            int count = use_count(uses, cur->dest);
             if (count == 0) {
                 if (cur->kind == INST_ASSIGN || cur->kind == INST_BINARY) removable = 1;
             }
@@ -189,7 +200,7 @@ static void pass_dead_code_elimination() {
             free(cur->dest); free(cur->arg1); free(cur->arg2); free(cur->op); free(cur);
         } else pp = &(*pp)->next;
     }
-    while (uses) { Use *nx = uses->next; free(uses->name); free(uses); uses = nx; }
+    use_free_all(&uses);
 }
 
 // Emit IR to file
@@ -286,9 +297,12 @@ void gerar_ir_main(ASTNode *ast_root, SymbolTable *global_table, FILE *saida) {
     if (!ast_root || !saida) return;
     ir_clear(); temp_count = 0; label_count = 0;
     gerarIR_no(ast_root, global_table, NULL, NULL);
-    // run passes
+    // run passes: propagation -> folding -> propagation -> DCE (small fix to expose constants created by folding)
     pass_copy_propagation();
     pass_constant_folding();
+    pass_copy_propagation();
+    pass_constant_folding();
+    pass_copy_propagation();
     pass_dead_code_elimination();
     // emit
     ir_emit_to_file(saida);
