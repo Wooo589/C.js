@@ -37,9 +37,6 @@ typedef struct ASTNode {
     float expr_value;
     char *expr_type;
     char *expr_name;
-    // Constant folding
-    int is_constant;
-    double const_value;
     // Links
     struct ASTNode *left;
     struct ASTNode *right;

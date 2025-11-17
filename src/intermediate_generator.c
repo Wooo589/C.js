@@ -7,7 +7,6 @@
 
 static int temp_count = 0;
 static int label_count = 0;
-static SymbolTable *global_table = NULL;
 
 static char *novaTemp() {
     char buf[32];
