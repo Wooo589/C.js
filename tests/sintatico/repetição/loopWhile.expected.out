@@ -14,7 +14,7 @@ Nome                 Tipo            Categoria       Linha      Inicializado
 ===== Tabela de Símbolos =====
 Nome                 Tipo            Categoria       Linha      Inicializado
 ----------------------------------------------------------------------
-main                 int             Função        7          Sim       
+i                    int             Variável       2          Sim       
 ===============================
 
 === TABELA DE SÍMBOLOS ===
@@ -22,7 +22,7 @@ main                 int             Função        7          Sim
 ===== Tabela de Símbolos =====
 Nome                 Tipo            Categoria       Linha      Inicializado
 ----------------------------------------------------------------------
-i                    int             Variável       2          Sim       
+main                 int             Função        1          Sim       
 ===============================
 
 

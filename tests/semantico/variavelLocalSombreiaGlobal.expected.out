@@ -1,1 +1,36 @@
 
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+===============================
+
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+x                    int             Variável       3          Sim       
+===============================
+
+=== TABELA DE SÍMBOLOS ===
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+a                    int             Parâmetro      2          Sim       
+x                    int             Variável       1          Sim       
+funcao               int             Função        2          Sim       
+===============================
+
+
+=== ÁRVORE SINTÁTICA ===
+Node(PROGRAM, value=null, type=null, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+  Node(VAR_DECL, value=x, type=int, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(NUM, value=null, type=int, line=1, expr_value=10.00, expr_type=int, expr_name=null)
+  Node(FUNCTION_DECL, value=funcao, type=int, line=5, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(PARAMETER, value=a, type=int, line=2, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(BLOCK, value=null, type=null, line=5, expr_value=0.00, expr_type=null, expr_name=null)
+      Node(VAR_DECL, value=x, type=int, line=3, expr_value=0.00, expr_type=null, expr_name=null)
+        Node(NUM, value=null, type=int, line=3, expr_value=20.00, expr_type=int, expr_name=null)
+      Node(RETURN, value=null, type=null, line=4, expr_value=0.00, expr_type=null, expr_name=null)
+        Node(BINARY_OP, value=+, type=int, line=4, expr_value=0.00, expr_type=null, expr_name=null)
+          Node(VAR, value=x, type=int, line=4, expr_value=0.00, expr_type=int, expr_name=

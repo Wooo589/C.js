@@ -8,7 +8,7 @@ Nome                 Tipo            Categoria       Linha      Inicializado
 ===== Tabela de Símbolos =====
 Nome                 Tipo            Categoria       Linha      Inicializado
 ----------------------------------------------------------------------
-obterValor           int             Função        4          Sim       
+valor                int             Variável       2          Sim       
 ===============================
 
 === TABELA DE SÍMBOLOS ===
@@ -16,7 +16,7 @@ obterValor           int             Função        4          Sim
 ===== Tabela de Símbolos =====
 Nome                 Tipo            Categoria       Linha      Inicializado
 ----------------------------------------------------------------------
-valor                int             Variável       2          Sim       
+obterValor           int             Função        1          Sim       
 ===============================
 
 

@@ -82,7 +82,7 @@ programa_corpo:
     ;
 
 declaracao_funcao:
-    tipo VAR LPAREN parametros RPAREN bloco 
+    tipo VAR LPAREN parametros RPAREN 
     {
         if (lookup_symbol_current_scope(current_table, $2) != NULL) {
             char error_msg[256];
@@ -95,15 +95,17 @@ declaracao_funcao:
         insert_symbol(current_table, $2, $1, SYMBOL_FUNCTION, contaLinhas, 1);
         SymbolTable *func_table = create_symbol_table(current_table);
         current_table = func_table;
-        
+    }
+    bloco 
+    {
         $$ = create_node(AST_FUNCTION_DECLARATION, $2, $1, contaLinhas);
         if ($4) {
             $$->children = $4;
             ASTNode *last_param = $4;
             while (last_param->next) last_param = last_param->next;
-            last_param->next = $6;
+            last_param->next = $7;
         } else {
-            $$->children = $6;
+            $$->children = $7;
         }
         
         print_symbol_table(current_table);
@@ -631,10 +633,9 @@ expressao:
             snprintf(error_msg, sizeof(error_msg), 
                     "Aviso na linha %d: Função '%s' não foi declarada", 
                     contaLinhas, $1);
-            yyerror(error_msg);
-            YYERROR;
+            fprintf(stderr, "%s\n", error_msg);
         }
-        $$ = create_node(AST_EXPR_CALL, $1, symbol->type, contaLinhas);
+        $$ = create_node(AST_EXPR_CALL, $1, symbol ? symbol->type : "unknown", contaLinhas);
         $$->children = $3;
         free($1);
     }

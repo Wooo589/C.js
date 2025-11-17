@@ -20,7 +20,6 @@ Nome                 Tipo            Categoria       Linha      Inicializado
 ===== Tabela de Símbolos =====
 Nome                 Tipo            Categoria       Linha      Inicializado
 ----------------------------------------------------------------------
-max                  int             Função        7          Sim       
 ===============================
 
 === TABELA DE SÍMBOLOS ===
@@ -30,6 +29,7 @@ Nome                 Tipo            Categoria       Linha      Inicializado
 ----------------------------------------------------------------------
 a                    int             Parâmetro      1          Sim       
 b                    int             Parâmetro      1          Sim       
+max                  int             Função        1          Sim       
 ===============================
 
 

@@ -8,7 +8,7 @@ Nome                 Tipo            Categoria       Linha      Inicializado
 ===== Tabela de Símbolos =====
 Nome                 Tipo            Categoria       Linha      Inicializado
 ----------------------------------------------------------------------
-main                 int             Função        9          Sim       
+x                    int             Variável       2          Sim       
 ===============================
 
 === TABELA DE SÍMBOLOS ===
@@ -16,7 +16,7 @@ main                 int             Função        9          Sim
 ===== Tabela de Símbolos =====
 Nome                 Tipo            Categoria       Linha      Inicializado
 ----------------------------------------------------------------------
-x                    int             Variável       2          Sim       
+main                 int             Função        1          Sim       
 ===============================
 
 
