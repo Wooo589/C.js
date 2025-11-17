@@ -61,4 +61,5 @@ void print_symbol_table(SymbolTable *table);
 // Atualizar o flag de inicialização de uma variável
 int update_symbol_initialization(SymbolTable *table, const char *name);
 
+extern SymbolTable *global_table;
 #endif // SYMBOL_TABLE_H

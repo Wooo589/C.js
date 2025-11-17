@@ -1,0 +1,6 @@
+; --- Início do Código Intermediário ---
+  t0 = 10.000000
+  arr = t0
+  t1 = 5.000000
+  valores = t1
+; --- Fim do Código Intermediário ---

@@ -480,6 +480,14 @@ expressao:
         $$->left = $1;
         $$->right = $3;
         $$->expr_value = $1->expr_value + $3->expr_value;
+        free($1->expr_type); free($3->expr_type);
+
+        if ($1->is_constant && $3->is_constant) {
+            $$->is_constant = 1;
+            $$->const_value = $1->const_value + $3->const_value;
+        } else {
+            $$->is_constant = 0;
+        }
     }
     | expressao MINUS expressao {
         $$ = create_node(AST_EXPR_BINARY, "-", $1->expr_type ? $1->expr_type : "float", contaLinhas);

@@ -31,6 +31,8 @@ typedef struct ASTNode {
     char *value; 
     char *data_type;
     int line;
+    int is_constant;
+    double const_value;
     // Expressão fields
     float expr_value;
     char *expr_type;
