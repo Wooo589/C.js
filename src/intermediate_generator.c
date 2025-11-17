@@ -7,6 +7,7 @@
 
 static int temp_count = 0;
 static int label_count = 0;
+static SymbolTable *global_table = NULL;
 
 static char *novaTemp() {
     char buf[32];
@@ -272,6 +273,41 @@ static char* gerarIR_no(ASTNode *no, SymbolTable *escopo, const char *breakLabel
             ASTNode *then_block = no->next; ASTNode *else_node = (then_block && then_block->next) ? then_block->next : NULL; char *label_else = novoLabel(); char *label_end = (else_node && else_node->type==AST_ELSE) ? novoLabel() : NULL; char *cond = gerarIR_no(no->children, escopo, breakLabel, continueLabel); emit_iffalse(cond, label_else); free(cond); gerarIR_no(then_block, escopo, breakLabel, continueLabel); if (label_end) { emit_goto(label_end); emit_label(label_else); gerarIR_no(else_node->children, escopo, breakLabel, continueLabel); emit_label(label_end); free(label_end); } else { emit_label(label_else); } free(label_else); proximo_no_lista = no->next; if (proximo_no_lista) proximo_no_lista = proximo_no_lista->next; if (proximo_no_lista && proximo_no_lista->type==AST_ELSE) proximo_no_lista = proximo_no_lista->next; break;
         }
         case AST_WHILE: { char *label_inicio = novoLabel(); char *label_fim = novoLabel(); emit_label(label_inicio); char *cond = gerarIR_no(no->children, escopo, breakLabel, continueLabel); emit_iffalse(cond, label_fim); free(cond); gerarIR_no(no->next, escopo, label_fim, label_inicio); emit_goto(label_inicio); emit_label(label_fim); free(label_inicio); free(label_fim); proximo_no_lista = no->next ? no->next->next : NULL; break; }
+        case AST_FOR: {
+            char *label_inicio = novoLabel();
+            char *label_fim = novoLabel();
+            char *label_incremento = novoLabel();
+            
+            ASTNode *init = no->children;
+            ASTNode *cond = init ? init->next : NULL;
+            ASTNode *increment = cond ? cond->next : NULL;
+            ASTNode *body = increment ? increment->next : NULL;
+            
+            if (init) gerarIR_no(init, escopo, breakLabel, continueLabel);
+            
+            emit_label(label_inicio);
+            
+            if (cond) {
+                char *cond_temp = gerarIR_no(cond, escopo, breakLabel, continueLabel);
+                emit_iffalse(cond_temp, label_fim);
+                free(cond_temp);
+            }
+            
+            if (body) gerarIR_no(body, escopo, label_fim, label_incremento);
+            
+            emit_label(label_incremento);
+            if (increment) gerarIR_no(increment, escopo, breakLabel, continueLabel);
+            
+            emit_goto(label_inicio);
+            emit_label(label_fim);
+            
+            free(label_inicio);
+            free(label_fim);
+            free(label_incremento);
+
+            proximo_no_lista = body ? body->next : NULL;
+            break;
+        }
         case AST_SWITCH: {
             char *label_end_switch = novoLabel(); char *label_default = NULL; char *switch_val = gerarIR_no(no->children, escopo, breakLabel, continueLabel);
             typedef struct { char *label; ASTNode *node; } CaseEntry; CaseEntry jump_table[100]; int case_count=0; ASTNode *item = no->next;
@@ -293,8 +329,9 @@ static char* gerarIR_no(ASTNode *no, SymbolTable *escopo, const char *breakLabel
     return result;
 }
 
-void gerar_ir_main(ASTNode *ast_root, SymbolTable *global_table, FILE *saida) {
+void gerar_ir_main(ASTNode *ast_root, SymbolTable *gt, FILE *saida) {
     if (!ast_root || !saida) return;
+    global_table = gt;
     ir_clear(); temp_count = 0; label_count = 0;
     gerarIR_no(ast_root, global_table, NULL, NULL);
     // run passes: propagation -> folding -> propagation -> DCE (small fix to expose constants created by folding)

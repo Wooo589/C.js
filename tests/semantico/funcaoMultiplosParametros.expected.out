@@ -1,1 +1,40 @@
 
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+===============================
+
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+calcular             int             Função        4          Sim       
+===============================
+
+=== TABELA DE SÍMBOLOS ===
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+x                    int             Parâmetro      1          Sim       
+y                    int             Parâmetro      1          Sim       
+z                    int             Parâmetro      1          Sim       
+resultado            int             Variável       2          Sim       
+===============================
+
+
+=== ÁRVORE SINTÁTICA ===
+Node(PROGRAM, value=null, type=null, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+  Node(FUNCTION_DECL, value=calcular, type=int, line=4, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(PARAMETER, value=x, type=int, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(PARAMETER, value=z, type=int, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(PARAMETER, value=y, type=int, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(BLOCK, value=null, type=null, line=4, expr_value=0.00, expr_type=null, expr_name=null)
+      Node(VAR_DECL, value=resultado, type=int, line=2, expr_value=0.00, expr_type=null, expr_name=null)
+        Node(BINARY_OP, value=+, type=float, line=2, expr_value=0.00, expr_type=null, expr_name=null)
+          Node(BINARY_OP, value=+, type=int, line=2, expr_value=0.00, expr_type=null, expr_name=null)
+            Node(VAR, value=x, type=int, line=2, expr_value=0.00, expr_type=int, expr_name=x)
+            Node(VAR, value=y, type=int, line=2, expr_value=0.00, expr_type=int, expr_name=y)
+          Node(VAR, value=z, type=int, line=2, expr_value=0.00, expr_type=int, expr_name=z)
+      Node(RETURN, value=null, type=int, line=3, expr_value=0.00, expr_type=null, expr_name=null)
+        Node(VAR, value=resultado, type=int, line=3, expr_value=0.00, expr_type=int, expr_name=resultado)

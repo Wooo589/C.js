@@ -16,4 +16,5 @@ Node(PROGRAM, value=null, type=null, line=1, expr_value=0.00, expr_type=null, ex
     Node(NUM, value=null, type=int, line=1, expr_value=10.00, expr_type=int, expr_name=null)
   Node(ASSIGNMENT, value=d, type=null, line=6, expr_value=0.00, expr_type=null, expr_name=null)
     Node(BINARY_OP, value=-, type=int, line=6, expr_value=0.00, expr_type=null, expr_name=null)
-      Node(Segmentation fault (core dumped)
+      Node(VAR, value=c, type=int, line=6, expr_value=0.00, expr_type=int, expr_name=c)
+      Node(VAR, value=a, type=int, line=6, expr_value=0.00, expr_type=int, expr_name=a)

@@ -1,0 +1,43 @@
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+===============================
+
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+===============================
+
+=== TABELA DE SÍMBOLOS ===
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+a                    int             Variável       3          Sim       
+x                    int             Variável       1          Sim       
+z                    int             Variável       2          Sim       
+===============================
+
+
+=== ÁRVORE SINTÁTICA ===
+Node(PROGRAM, value=null, type=null, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+  Node(VAR_DECL, value=x, type=int, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(NUM, value=null, type=int, line=1, expr_value=10.00, expr_type=int, expr_name=null)
+  Node(IF, value=null, type=null, line=11, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(BINARY_OP, value===, type=int, line=5, expr_value=0.00, expr_type=int, expr_name=null)
+      Node(VAR, value=x, type=int, line=5, expr_value=0.00, expr_type=int, expr_name=x)
+      Node(NUM, value=null, type=int, line=5, expr_value=20.00, expr_type=int, expr_name=null)
+  Node(BLOCK, value=null, type=null, line=11, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(BLOCK, value=null, type=null, line=7, expr_value=0.00, expr_type=null, expr_name=null)
+      Node(ASSIGNMENT, value=z, type=null, line=6, expr_value=0.00, expr_type=null, expr_name=null)
+        Node(NUM, value=null, type=int, line=6, expr_value=30.00, expr_type=int, expr_name=null)
+  Node(IF, value=null, type=null, line=11, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(BINARY_OP, value===, type=int, line=9, expr_value=0.00, expr_type=int, expr_name=null)
+      Node(VAR, value=x, type=int, line=9, expr_value=0.00, expr_type=int, expr_name=x)
+      Node(NUM, value=null, type=int, line=9, expr_value=10.00, expr_type=int, expr_name=null)
+  Node(BLOCK, value=null, type=null, line=11, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(BLOCK, value=null, type=null, line=11, expr_value=0.00, expr_type=null, expr_name=null)
+      Node(ASSIGNMENT, value=a, type=null, line=10, expr_value=0.00, expr_type=null, expr_name=null)
+        Node(NUM, value=null, type=int, line=10, expr_value=40.00, expr_type=int, expr_name=null)

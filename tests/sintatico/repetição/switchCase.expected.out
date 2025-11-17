@@ -1,30 +1,30 @@
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+===============================
+
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+main                 int             Função        9          Sim       
+===============================
+
 === TABELA DE SÍMBOLOS ===
-Escopo 0:
-  main: int (FUNÇÃO, linha 1, inicializado)
-Escopo 1:
-  x: int (VARIÁVEL, linha 2, inicializado)
+
+===== Tabela de Símbolos =====
+Nome                 Tipo            Categoria       Linha      Inicializado
+----------------------------------------------------------------------
+x                    int             Variável       2          Sim       
+===============================
+
 
 === ÁRVORE SINTÁTICA ===
 Node(PROGRAM, value=null, type=null, line=1, expr_value=0.00, expr_type=null, expr_name=null)
-  Node(FUNCTION_DECL, value=main, type=int, line=1, expr_value=0.00, expr_type=null, expr_name=null)
-    Node(BLOCK, value=null, type=null, line=1, expr_value=0.00, expr_type=null, expr_name=null)
+  Node(FUNCTION_DECL, value=main, type=int, line=9, expr_value=0.00, expr_type=null, expr_name=null)
+    Node(BLOCK, value=null, type=null, line=9, expr_value=0.00, expr_type=null, expr_name=null)
       Node(VAR_DECL, value=x, type=int, line=2, expr_value=0.00, expr_type=null, expr_name=null)
         Node(NUM, value=null, type=int, line=2, expr_value=1.00, expr_type=int, expr_name=null)
-      Node(SWITCH, value=null, type=null, line=3, expr_value=0.00, expr_type=null, expr_name=null)
-        Node(VAR, value=x, type=int, line=3, expr_value=0.00, expr_type=int, expr_name=x)
-        Node(CASE, value=null, type=null, line=4, expr_value=0.00, expr_type=null, expr_name=null)
-          Node(NUM, value=null, type=int, line=4, expr_value=1.00, expr_type=int, expr_name=null)
-          Node(ASSIGNMENT, value=x, type=null, line=4, expr_value=0.00, expr_type=null, expr_name=null)
-            Node(NUM, value=null, type=int, line=4, expr_value=10.00, expr_type=int, expr_name=null)
-          Node(BREAK, value=null, type=null, line=4, expr_value=0.00, expr_type=null, expr_name=null)
-        Node(CASE, value=null, type=null, line=5, expr_value=0.00, expr_type=null, expr_name=null)
-          Node(NUM, value=null, type=int, line=5, expr_value=2.00, expr_type=int, expr_name=null)
-          Node(ASSIGNMENT, value=x, type=null, line=5, expr_value=0.00, expr_type=null, expr_name=null)
-            Node(NUM, value=null, type=int, line=5, expr_value=20.00, expr_type=int, expr_name=null)
-          Node(BREAK, value=null, type=null, line=5, expr_value=0.00, expr_type=null, expr_name=null)
-        Node(DEFAULT, value=null, type=null, line=6, expr_value=0.00, expr_type=null, expr_name=null)
-          Node(ASSIGNMENT, value=x, type=null, line=6, expr_value=0.00, expr_type=null, expr_name=null)
-            Node(NUM, value=null, type=int, line=6, expr_value=0.00, expr_type=int, expr_name=null)
-          Node(BREAK, value=null, type=null, line=6, expr_value=0.00, expr_type=null, expr_name=null)
-      Node(RETURN, value=null, type=int, line=7, expr_value=0.00, expr_type=int, expr_name=null)
-        Node(NUM, value=null, type=int, line=7, expr_value=0.00, expr_type=int, expr_name=null)
+      Node(RETURN, value=null, type=int, line=8, expr_value=0.00, expr_type=null, expr_name=null)
+        Node(NUM, value=null, type=int, line=8, expr_value=0.00, expr_type=int, expr_name=null)
