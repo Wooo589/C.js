@@ -1,4 +1,6 @@
 int x = 10;
+int z;
+int a;
 
 if (x == 20){
     z = 30;

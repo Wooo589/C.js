@@ -1,1 +1,3 @@
-int x, y = 20, z = 30;
+int x;
+int y = 20;
+int z = 30;

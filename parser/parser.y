@@ -92,8 +92,8 @@ declaracao_funcao:
             yyerror(error_msg);
             YYERROR;
         }
+        insert_symbol(current_table, $2, $1, SYMBOL_FUNCTION, contaLinhas, 1);
         SymbolTable *func_table = create_symbol_table(current_table);
-        insert_symbol(func_table, $2, $1, SYMBOL_FUNCTION, contaLinhas, 1);
         current_table = func_table;
         
         $$ = create_node(AST_FUNCTION_DECLARATION, $2, $1, contaLinhas);
@@ -595,6 +595,11 @@ expressao:
         $$->expr_value = $1;
         $$->expr_type = strdup("float");
     }
+    | STRING_LITERAL {
+        $$ = create_node(AST_EXPR_NUM, $1, "string", contaLinhas);
+        $$->expr_type = strdup("string");
+        free($1);
+    }
     | VAR {
     Symbol *symbol = lookup_symbol(current_table, $1);
     if (symbol == NULL) {
@@ -608,6 +613,7 @@ expressao:
 
     $$ = create_node(AST_EXPR_VAR, $1, strdup(symbol->type), contaLinhas);
     $$->expr_type = strdup(symbol->type);
+    $$->expr_name = strdup($1);
 
     if (symbol->is_constant) {
         $$->is_constant = 1;
@@ -793,6 +799,12 @@ int main(int argc, char **argv) {
     
     int result = yyparse();
     
+    if (result == 0 && global_table != NULL) {
+        printf("=== TABELA DE SÍMBOLOS ===\n");
+        print_symbol_table(global_table);
+        printf("\n=== ÁRVORE SINTÁTICA ===\n");
+        print_ast(ast_root, 0);
+    }
 
     /* Gera o código intermediário em output.ir */
     FILE *ir_file = fopen("output.ir", "w");
