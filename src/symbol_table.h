@@ -22,6 +22,8 @@ typedef struct Symbol {
     SymbolType symbol_type;  // Tipo do símbolo (variável, função, etc.)
     int line;                // Linha onde foi declarado
     int initialized;         // Flag para verificar se foi inicializado
+    int is_constant;         // Flag para valores constantes
+    double constant_value;   // Valor da constante
     struct Symbol *next;     // Para tratar colisões (encadeamento)
 } Symbol;
 

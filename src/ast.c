@@ -17,6 +17,8 @@ ASTNode *create_node(ASTNodeType type, char *value, char *data_type, int line) {
     node->expr_value = 0.0;
     node->expr_type = NULL;
     node->expr_name = NULL;
+    node->is_constant = 0;
+    node->const_value = 0.0;
     node->left = NULL;
     node->right = NULL;
     node->next = NULL;

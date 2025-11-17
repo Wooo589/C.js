@@ -75,6 +75,8 @@ int insert_symbol(SymbolTable *table, const char *name, const char *type,
     new_symbol->symbol_type = symbol_type;
     new_symbol->line = line;
     new_symbol->initialized = initialized;
+    new_symbol->is_constant = 0;
+    new_symbol->constant_value = 0.0;
     
     // Inserir no início da lista encadeada (tratamento de colisões)
     new_symbol->next = table->table[index];
