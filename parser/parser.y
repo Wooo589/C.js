@@ -631,9 +631,10 @@ expressao:
             snprintf(error_msg, sizeof(error_msg), 
                     "Aviso na linha %d: Função '%s' não foi declarada", 
                     contaLinhas, $1);
-            fprintf(stderr, "%s\n", error_msg);
+            yyerror(error_msg);
+            YYERROR;
         }
-        $$ = create_node(AST_EXPR_CALL, $1, symbol ? symbol->type : "unknown", contaLinhas);
+        $$ = create_node(AST_EXPR_CALL, $1, symbol->type, contaLinhas);
         $$->children = $3;
         free($1);
     }
