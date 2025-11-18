@@ -342,6 +342,114 @@ void gerar_ir_main(ASTNode *ast_root, SymbolTable *gt, FILE *saida) {
     pass_dead_code_elimination();
     // emit
     ir_emit_to_file(saida);
+    // also emit a simple C translation (final code) to output.c
+    {
+        FILE *fc = fopen("output.c", "w");
+        if (fc) {
+            // Simple translation from IR to C
+            // collect identifiers
+            char *names[1024]; int n_names = 0;
+            for (Instr *it = ir_head; it; it = it->next) {
+                if (it->dest && !is_number_str(it->dest, NULL) && it->dest[0] != 'L') {
+                    int found = 0; for (int i=0;i<n_names;i++) if (strcmp(names[i], it->dest)==0) { found=1; break; }
+                    if (!found) names[n_names++] = strdup(it->dest);
+                }
+                if (it->arg1 && !is_number_str(it->arg1, NULL) && it->arg1[0] != 'L') {
+                    int found = 0; for (int i=0;i<n_names;i++) if (strcmp(names[i], it->arg1)==0) { found=1; break; }
+                    if (!found) names[n_names++] = strdup(it->arg1);
+                }
+                if (it->arg2 && !is_number_str(it->arg2, NULL) && it->arg2[0] != 'L') {
+                    int found = 0; for (int i=0;i<n_names;i++) if (strcmp(names[i], it->arg2)==0) { found=1; break; }
+                    if (!found) names[n_names++] = strdup(it->arg2);
+                }
+            }
+
+            fprintf(fc, "#include <stdio.h>\n#include <math.h>\n\n");
+            // __arg globals for parameter passing
+            fprintf(fc, "double __arg[32];\n\n");
+
+            // declare globals for all names
+            for (int i=0;i<n_names;i++) fprintf(fc, "double %s = 0.0;\n", names[i]);
+            if (n_names) fprintf(fc, "\n");
+
+            // emit functions and main
+            int in_func = 0;
+            // detect whether we need a top-level main wrapper
+            int need_main = 0; { int cur_f = 0; for (Instr *it2 = ir_head; it2; it2 = it2->next) { if (it2->kind==INST_FUNC_BEGIN) cur_f=1; else if (it2->kind==INST_FUNC_END) cur_f=0; else if (!cur_f) { if (it2->kind==INST_ASSIGN||it2->kind==INST_BINARY||it2->kind==INST_CALL||it2->kind==INST_GOTO||it2->kind==INST_IFFALSE||it2->kind==INST_IFTRUE||it2->kind==INST_LABEL||it2->kind==INST_RETURN) { need_main=1; break; } } } }
+            int param_stack_count = 0; char *param_stack[128];
+            for (Instr *it = ir_head; it; it = it->next) {
+                switch (it->kind) {
+                    case INST_FUNC_BEGIN:
+                        in_func = 1;
+                        fprintf(fc, "double %s() {\n", it->op ? it->op : "func");
+                        break;
+                    case INST_RECV_PARAM:
+                        // map param from __arg array
+                        fprintf(fc, "  double %s = __arg[%d];\n", it->op ? it->op : "param", param_stack_count);
+                        param_stack_count++;
+                        break;
+                    case INST_FUNC_END:
+                        fprintf(fc, "}\n\n");
+                        in_func = 0; param_stack_count = 0;
+                        break;
+                    case INST_PARAM:
+                        if (param_stack_count < 128) param_stack[param_stack_count++] = it->arg1 ? strdup(it->arg1) : strdup("0");
+                        break;
+                    case INST_CALL: {
+                        int nargs = it->aux;
+                        // assign args to __arg
+                        for (int a=0;a<nargs && a<param_stack_count; a++) fprintf(fc, "  __arg[%d] = %s;\n", a, param_stack[a]);
+                        // emit call
+                        fprintf(fc, "  %s = %s();\n", it->dest ? it->dest : "_", it->op ? it->op : "func");
+                        // clear param stack
+                        for (int a=0;a<param_stack_count;a++) free(param_stack[a]); param_stack_count = 0;
+                        break; }
+                    case INST_ASSIGN:
+                        if (in_func) fprintf(fc, "  %s = %s;\n", it->dest ? it->dest : "_", it->arg1 ? it->arg1 : "0");
+                        else fprintf(fc, "int main(){ %s = %s;\n", it->dest ? it->dest : "_", it->arg1 ? it->arg1 : "0");
+                        break;
+                    case INST_BINARY:
+                        if (in_func) fprintf(fc, "  %s = %s %s %s;\n", it->dest ? it->dest : "_", it->arg1 ? it->arg1 : "0", it->op ? it->op : "?", it->arg2 ? it->arg2 : "0");
+                        else fprintf(fc, "int main(){ %s = %s %s %s;\n", it->dest ? it->dest : "_", it->arg1 ? it->arg1 : "0", it->op ? it->op : "?", it->arg2 ? it->arg2 : "0");
+                        break;
+                    case INST_LABEL:
+                        if (in_func) fprintf(fc, "%s:\n", it->op ? it->op : "L");
+                        else fprintf(fc, "L_main_%s:\n", it->op ? it->op : "L");
+                        break;
+                    case INST_GOTO:
+                        if (in_func) fprintf(fc, "  goto %s;\n", it->op ? it->op : "L");
+                        else fprintf(fc, "  goto L_main_%s;\n", it->op ? it->op : "L");
+                        break;
+                    case INST_IFFALSE:
+                        if (in_func) fprintf(fc, "  if (!(%s)) goto %s;\n", it->arg1 ? it->arg1 : "0", it->op ? it->op : "L");
+                        else fprintf(fc, "  if (!(%s)) goto L_main_%s;\n", it->arg1 ? it->arg1 : "0", it->op ? it->op : "L");
+                        break;
+                    case INST_IFTRUE:
+                        if (in_func) fprintf(fc, "  if (%s) goto %s;\n", it->arg1 ? it->arg1 : "0", it->op ? it->op : "L");
+                        else fprintf(fc, "  if (%s) goto L_main_%s;\n", it->arg1 ? it->arg1 : "0", it->op ? it->op : "L");
+                        break;
+                    case INST_RETURN:
+                        if (it->arg1) fprintf(fc, "  return %s;\n", it->arg1); else fprintf(fc, "  return 0.0;\n");
+                        break;
+                    default:
+                        // other instructions ignored or represented as comments
+                        if (it->kind == INST_PARAM) { /* handled earlier */ }
+                        break;
+                }
+            }
+
+            // If we detected top-level instructions, append a main closing
+            if (need_main) {
+                fprintf(fc, "  return 0;\n}\n");
+            }
+
+            // free name strings
+            for (int i=0;i<n_names;i++) free(names[i]);
+            fclose(fc);
+        } else {
+            fprintf(stderr, "Aviso: não foi possível abrir output.c para escrita.\n");
+        }
+    }
     // cleanup
     ir_clear();
 }
