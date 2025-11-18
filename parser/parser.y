@@ -808,15 +808,57 @@ int main(int argc, char **argv) {
         print_ast(ast_root, 0);
     }
 
-    /* Gera o código intermediário em outputs/output.ir */
-    /* cria o diretório outputs se necessário */
-    system("mkdir -p outputs");
-    FILE *ir_file = fopen("outputs/output.ir", "w");
-    if (ir_file) {
-        gerar_ir_main(ast_root, global_table, ir_file);
-        fclose(ir_file);
-    } else {
-        fprintf(stderr, "Erro ao abrir arquivo de IR para escrita.\n");
+    /* Gera o código intermediário em outputs/<relative_test>.ir
+       If environment variable TEST_INPUT is set, derive a relative path
+       after the 'tests/' segment and use that to create per-test outputs.
+       Then set OUTPUT_BASE environment variable to the base path (without extension)
+       so the IR generator can create corresponding .c and auto-compile. */
+    {
+        const char *env_in = getenv("TEST_INPUT");
+        char outbase[1024];
+        if (env_in) {
+            const char *p = strstr(env_in, "tests/");
+            const char *rel = p ? p + strlen("tests/") : env_in;
+            /* copy rel into outbase, remove extension if any */
+            strncpy(outbase, rel, sizeof(outbase)-1); outbase[sizeof(outbase)-1]=0;
+            /* replace trailing .txt or other extension */
+            char *dot = strrchr(outbase, '.');
+            if (dot) *dot = '\0';
+            /* prefix with outputs/ */
+            char tmp[1100]; snprintf(tmp, sizeof(tmp), "outputs/%s", outbase);
+            /* ensure dirname exists */
+            char dircmd[1200]; strcpy(outbase, tmp); /* outbase now contains outputs/<rel-without-ext> */
+            char *lastslash = strrchr(outbase, '/');
+            if (lastslash) {
+                *lastslash = '\0';
+                snprintf(dircmd, sizeof(dircmd), "mkdir -p '%s'", outbase);
+                system(dircmd);
+                *lastslash = '/';
+            } else {
+                system("mkdir -p outputs");
+            }
+            /* prepare IR path */
+            char irpath[1200]; snprintf(irpath, sizeof(irpath), "%s.ir", tmp);
+            /* set OUTPUT_BASE to tmp (without extension) */
+            setenv("OUTPUT_BASE", tmp, 1);
+            FILE *ir_file = fopen(irpath, "w");
+            if (ir_file) {
+                gerar_ir_main(ast_root, global_table, ir_file);
+                fclose(ir_file);
+            } else {
+                fprintf(stderr, "Erro ao abrir arquivo de IR para escrita: %s\n", irpath);
+            }
+        } else {
+            system("mkdir -p outputs");
+            setenv("OUTPUT_BASE", "outputs/output", 1);
+            FILE *ir_file = fopen("outputs/output.ir", "w");
+            if (ir_file) {
+                gerar_ir_main(ast_root, global_table, ir_file);
+                fclose(ir_file);
+            } else {
+                fprintf(stderr, "Erro ao abrir arquivo de IR para escrita.\n");
+            }
+        }
     }
     
     if (global_table != NULL) free_symbol_table(global_table);

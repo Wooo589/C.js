@@ -342,9 +342,13 @@ void gerar_ir_main(ASTNode *ast_root, SymbolTable *gt, FILE *saida) {
     pass_dead_code_elimination();
     // emit
     ir_emit_to_file(saida);
-    // also emit a simple C translation (final code) to outputs/output.c
+    // also emit a simple C translation (final code) to outputs/<base>.c
     {
-        FILE *fc = fopen("outputs/output.c", "w");
+        const char *out_base = getenv("OUTPUT_BASE");
+        char outc_path[1200];
+        if (out_base) snprintf(outc_path, sizeof(outc_path), "%s.c", out_base);
+        else snprintf(outc_path, sizeof(outc_path), "outputs/output.c");
+        FILE *fc = fopen(outc_path, "w");
         if (fc) {
             // Simple translation from IR to C
             // collect identifiers
@@ -368,8 +372,22 @@ void gerar_ir_main(ASTNode *ast_root, SymbolTable *gt, FILE *saida) {
             // __arg globals for parameter passing
             fprintf(fc, "double __arg[32];\n\n");
 
-            // declare globals for all names
-            for (int i=0;i<n_names;i++) fprintf(fc, "double %s = 0.0;\n", names[i]);
+            // declare globals for all names, preserving types from the symbol table when possible
+            for (int i=0;i<n_names;i++) {
+                const char *decl_type = "double";
+                if (global_table) {
+                    Symbol *sym = lookup_symbol(global_table, names[i]);
+                    if (sym && sym->type) {
+                        if (strstr(sym->type, "int")) decl_type = "int";
+                        else if (strstr(sym->type, "char")) decl_type = "char";
+                        else decl_type = "double";
+                    }
+                }
+                if (strcmp(decl_type, "int") == 0 || strcmp(decl_type, "char") == 0)
+                    fprintf(fc, "%s %s = 0;\n", decl_type, names[i]);
+                else
+                    fprintf(fc, "%s %s = 0.0;\n", decl_type, names[i]);
+            }
             if (n_names) fprintf(fc, "\n");
 
             // emit functions and main
@@ -455,8 +473,21 @@ void gerar_ir_main(ASTNode *ast_root, SymbolTable *gt, FILE *saida) {
             // free name strings
             for (int i=0;i<n_names;i++) free(names[i]);
             fclose(fc);
+
+            /* Try to auto-compile the generated C to an executable next to the .c */
+            if (out_base) {
+                char cmd[2048];
+                char errpath[1200];
+                snprintf(errpath, sizeof(errpath), "%s.compile.err", out_base);
+                /* compile with -O2 and link math library */
+                snprintf(cmd, sizeof(cmd), "gcc -O2 -std=c99 -lm -o '%s' '%s' 2> '%s'", out_base, outc_path, errpath);
+                int rc = system(cmd);
+                if (rc != 0) {
+                    fprintf(stderr, "Aviso: compilação do gerado falhou (veja %s)\n", errpath);
+                }
+            }
         } else {
-            fprintf(stderr, "Aviso: não foi possível abrir outputs/output.c para escrita.\n");
+            fprintf(stderr, "Aviso: não foi possível abrir %s para escrita.\n", outc_path);
         }
     }
     // cleanup

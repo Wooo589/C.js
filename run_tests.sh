@@ -41,6 +41,8 @@ for test_file in "${TEST_FILES[@]}"; do
     actual_out_file=$(mktemp)
     actual_err_file=$(mktemp)
 
+    # export TEST_INPUT so the parser can generate per-test outputs
+    export TEST_INPUT="$test_file"
     $COMPILER_EXEC < "$test_file" > "$actual_out_file" 2> "$actual_err_file"
     status=$?
 
