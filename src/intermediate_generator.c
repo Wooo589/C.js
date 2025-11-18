@@ -342,9 +342,9 @@ void gerar_ir_main(ASTNode *ast_root, SymbolTable *gt, FILE *saida) {
     pass_dead_code_elimination();
     // emit
     ir_emit_to_file(saida);
-    // also emit a simple C translation (final code) to output.c
+    // also emit a simple C translation (final code) to outputs/output.c
     {
-        FILE *fc = fopen("output.c", "w");
+        FILE *fc = fopen("outputs/output.c", "w");
         if (fc) {
             // Simple translation from IR to C
             // collect identifiers
@@ -456,7 +456,7 @@ void gerar_ir_main(ASTNode *ast_root, SymbolTable *gt, FILE *saida) {
             for (int i=0;i<n_names;i++) free(names[i]);
             fclose(fc);
         } else {
-            fprintf(stderr, "Aviso: não foi possível abrir output.c para escrita.\n");
+            fprintf(stderr, "Aviso: não foi possível abrir outputs/output.c para escrita.\n");
         }
     }
     // cleanup

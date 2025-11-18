@@ -808,8 +808,10 @@ int main(int argc, char **argv) {
         print_ast(ast_root, 0);
     }
 
-    /* Gera o código intermediário em output.ir */
-    FILE *ir_file = fopen("output.ir", "w");
+    /* Gera o código intermediário em outputs/output.ir */
+    /* cria o diretório outputs se necessário */
+    system("mkdir -p outputs");
+    FILE *ir_file = fopen("outputs/output.ir", "w");
     if (ir_file) {
         gerar_ir_main(ast_root, global_table, ir_file);
         fclose(ir_file);
