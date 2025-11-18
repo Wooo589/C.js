@@ -374,6 +374,7 @@ void gerar_ir_main(ASTNode *ast_root, SymbolTable *gt, FILE *saida) {
 
             // emit functions and main
             int in_func = 0;
+            int main_opened = 0; // whether we've emitted 'int main(){' for top-level code
             // detect whether we need a top-level main wrapper
             int need_main = 0; { int cur_f = 0; for (Instr *it2 = ir_head; it2; it2 = it2->next) { if (it2->kind==INST_FUNC_BEGIN) cur_f=1; else if (it2->kind==INST_FUNC_END) cur_f=0; else if (!cur_f) { if (it2->kind==INST_ASSIGN||it2->kind==INST_BINARY||it2->kind==INST_CALL||it2->kind==INST_GOTO||it2->kind==INST_IFFALSE||it2->kind==INST_IFTRUE||it2->kind==INST_LABEL||it2->kind==INST_RETURN) { need_main=1; break; } } } }
             int param_stack_count = 0; char *param_stack[128];
@@ -405,20 +406,28 @@ void gerar_ir_main(ASTNode *ast_root, SymbolTable *gt, FILE *saida) {
                         for (int a=0;a<param_stack_count;a++) free(param_stack[a]); param_stack_count = 0;
                         break; }
                     case INST_ASSIGN:
-                        if (in_func) fprintf(fc, "  %s = %s;\n", it->dest ? it->dest : "_", it->arg1 ? it->arg1 : "0");
-                        else fprintf(fc, "int main(){ %s = %s;\n", it->dest ? it->dest : "_", it->arg1 ? it->arg1 : "0");
+                        if (in_func) {
+                            fprintf(fc, "  %s = %s;\n", it->dest ? it->dest : "_", it->arg1 ? it->arg1 : "0");
+                        } else {
+                            if (!main_opened) { fprintf(fc, "int main(){\n"); main_opened = 1; }
+                            fprintf(fc, "  %s = %s;\n", it->dest ? it->dest : "_", it->arg1 ? it->arg1 : "0");
+                        }
                         break;
                     case INST_BINARY:
-                        if (in_func) fprintf(fc, "  %s = %s %s %s;\n", it->dest ? it->dest : "_", it->arg1 ? it->arg1 : "0", it->op ? it->op : "?", it->arg2 ? it->arg2 : "0");
-                        else fprintf(fc, "int main(){ %s = %s %s %s;\n", it->dest ? it->dest : "_", it->arg1 ? it->arg1 : "0", it->op ? it->op : "?", it->arg2 ? it->arg2 : "0");
+                        if (in_func) {
+                            fprintf(fc, "  %s = %s %s %s;\n", it->dest ? it->dest : "_", it->arg1 ? it->arg1 : "0", it->op ? it->op : "?", it->arg2 ? it->arg2 : "0");
+                        } else {
+                            if (!main_opened) { fprintf(fc, "int main(){\n"); main_opened = 1; }
+                            fprintf(fc, "  %s = %s %s %s;\n", it->dest ? it->dest : "_", it->arg1 ? it->arg1 : "0", it->op ? it->op : "?", it->arg2 ? it->arg2 : "0");
+                        }
                         break;
                     case INST_LABEL:
                         if (in_func) fprintf(fc, "%s:\n", it->op ? it->op : "L");
-                        else fprintf(fc, "L_main_%s:\n", it->op ? it->op : "L");
+                        else { if (!main_opened) { fprintf(fc, "int main(){\n"); main_opened = 1; } fprintf(fc, "L_main_%s:\n", it->op ? it->op : "L"); }
                         break;
                     case INST_GOTO:
                         if (in_func) fprintf(fc, "  goto %s;\n", it->op ? it->op : "L");
-                        else fprintf(fc, "  goto L_main_%s;\n", it->op ? it->op : "L");
+                        else { if (!main_opened) { fprintf(fc, "int main(){\n"); main_opened = 1; } fprintf(fc, "  goto L_main_%s;\n", it->op ? it->op : "L"); }
                         break;
                     case INST_IFFALSE:
                         if (in_func) fprintf(fc, "  if (!(%s)) goto %s;\n", it->arg1 ? it->arg1 : "0", it->op ? it->op : "L");
