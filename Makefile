@@ -23,6 +23,8 @@ SYMBOL_TABLE_H = $(SRC_DIR)/symbol_table.h
 AST_C = $(SRC_DIR)/ast.c
 AST_H = $(SRC_DIR)/ast.h
 INTERMEDIATE_C = $(SRC_DIR)/intermediate_generator.c
+JS_GENERATOR_C = $(SRC_DIR)/js_generator.c
+JS_GENERATOR_H = $(SRC_DIR)/js_generator.h
 
 # Parâmetros opcionais ao Bison e Flex
 BISON_FLAGS = -d   # -d gera o arquivo .h (token definitions)
@@ -37,8 +39,8 @@ LDFLAGS = -lm     # biblioteca matemática
 all: $(EXEC)
 
 # Regra para gerar o executável: depende dos arquivos gerados por Bison e Flex
-$(EXEC): $(BISON_C) $(FLEX_C) $(SYMBOL_TABLE_C) $(AST_C) $(INTERMEDIATE_C)
-	$(CC) $(CFLAGS) -o $@ $(BISON_C) $(FLEX_C) $(SYMBOL_TABLE_C) $(AST_C) $(INTERMEDIATE_C) $(LDFLAGS)
+$(EXEC): $(BISON_C) $(FLEX_C) $(SYMBOL_TABLE_C) $(AST_C) $(INTERMEDIATE_C) $(JS_GENERATOR_C)
+	$(CC) $(CFLAGS) -o $@ $(BISON_C) $(FLEX_C) $(SYMBOL_TABLE_C) $(AST_C) $(INTERMEDIATE_C) $(JS_GENERATOR_C) $(LDFLAGS)
 
 # Regra para rodar o Bison: gera parser.tab.c e parser.tab.h
 $(BISON_C) $(BISON_H): $(BISON_FILE)

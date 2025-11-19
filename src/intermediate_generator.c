@@ -1,4 +1,5 @@
 #include "intermediate_generator.h"
+#include "js_generator.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -488,6 +489,19 @@ void gerar_ir_main(ASTNode *ast_root, SymbolTable *gt, FILE *saida) {
             }
         } else {
             fprintf(stderr, "Aviso: não foi possível abrir %s para escrita.\n", outc_path);
+        }
+        
+        // Gera código JavaScript (.js)
+        char outjs_path[1200];
+        if (out_base) snprintf(outjs_path, sizeof(outjs_path), "%s.js", out_base);
+        else snprintf(outjs_path, sizeof(outjs_path), "outputs/output.js");
+        
+        FILE *fjs = fopen(outjs_path, "w");
+        if (fjs) {
+            generate_javascript(ir_head, fjs);
+            fclose(fjs);
+        } else {
+            fprintf(stderr, "Aviso: não foi possível abrir %s para escrita.\n", outjs_path);
         }
     }
     // cleanup
