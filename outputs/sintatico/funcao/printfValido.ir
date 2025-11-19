@@ -1,8 +1,0 @@
-; --- Início do Código Intermediário ---
-
-func main
-  param 0.000000
-  t0 = call printf, 1
-  return 0.000000
-end func main
-; --- Fim do Código Intermediário ---

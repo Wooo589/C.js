@@ -1,5 +1,0 @@
-; --- Início do Código Intermediário ---
-  x = 10.000000
-  t1 = 5.000000 -- 
-  y = t1
-; --- Fim do Código Intermediário ---

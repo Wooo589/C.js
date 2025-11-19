@@ -1,7 +1,0 @@
-outputs/semantico/incrementoDecrementoValido.c:8:9: error: expected identifier or ‘(’ before ‘=’ token
-    8 | double  = 0.0;
-      |         ^
-outputs/semantico/incrementoDecrementoValido.c: In function ‘main’:
-outputs/semantico/incrementoDecrementoValido.c:12:18: error: lvalue required as decrement operand
-   12 |   t1 = 10.000000 -- ;
-      |                  ^~

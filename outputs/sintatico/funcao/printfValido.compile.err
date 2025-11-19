@@ -1,9 +1,0 @@
-outputs/sintatico/funcao/printfValido.c: In function ‘main’:
-outputs/sintatico/funcao/printfValido.c:10:8: error: too few arguments to function ‘printf’
-   10 |   t0 = printf();
-      |        ^~~~~~
-In file included from /usr/include/stdio.h:980,
-                 from outputs/sintatico/funcao/printfValido.c:1:
-/usr/include/x86_64-linux-gnu/bits/stdio2.h:84:1: note: declared here
-   84 | printf (const char *__restrict __fmt, ...)
-      | ^~~~~~

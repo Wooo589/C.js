@@ -1,7 +1,0 @@
-outputs/semantico/funcaoNaoDeclarada.c: In function ‘main’:
-outputs/semantico/funcaoNaoDeclarada.c:14:8: warning: implicit declaration of function ‘calcular’ [-Wimplicit-function-declaration]
-   14 |   t1 = calcular();
-      |        ^~~~~~~~
-/usr/bin/ld: /tmp/ccgNuUPe.o: in function `main':
-funcaoNaoDeclarada.c:(.text.startup+0x24): undefined reference to `calcular'
-collect2: error: ld returned 1 exit status

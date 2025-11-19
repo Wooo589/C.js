@@ -12,3 +12,10 @@ parser.output
 
 # Executáveis
 c_parser
+
+# Outputs gerados (IR, C, JS, binários)
+outputs/
+output.ir
+output.c
+output.js
+

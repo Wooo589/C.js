@@ -1,4 +1,0 @@
-outputs/semantico/atribuicoesCompostasValidas.c: In function ‘main’:
-outputs/semantico/atribuicoesCompostasValidas.c:11:18: error: lvalue required as left operand of assignment
-   11 |   t2 = 10.000000 %= 3.000000;
-      |                  ^~
