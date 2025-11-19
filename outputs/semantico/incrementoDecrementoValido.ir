@@ -1,0 +1,5 @@
+; --- Início do Código Intermediário ---
+  x = 10.000000
+  t1 = 10.000000 -- 
+  x = t1
+; --- Fim do Código Intermediário ---

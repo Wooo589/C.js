@@ -1,0 +1,22 @@
+outputs/sintatico/repetição/forMultiploValido.c:9:9: error: expected identifier or ‘(’ before ‘=’ token
+    9 | double  = 0.0;
+      |         ^
+outputs/sintatico/repetição/forMultiploValido.c: In function ‘main’:
+outputs/sintatico/repetição/forMultiploValido.c:50:17: error: lvalue required as increment operand
+   50 |   t4 = 0.000000 ++ ;
+      |                 ^~
+outputs/sintatico/repetição/forMultiploValido.c:53:17: error: lvalue required as increment operand
+   53 |   t8 = 0.000000 ++ ;
+      |                 ^~
+outputs/sintatico/repetição/forMultiploValido.c:55:18: error: lvalue required as increment operand
+   55 |   t9 = 10.000000 ++ ;
+      |                  ^~
+outputs/sintatico/repetição/forMultiploValido.c:78:18: error: lvalue required as increment operand
+   78 |   t23 = 0.000000 ++ ;
+      |                  ^~
+outputs/sintatico/repetição/forMultiploValido.c:100:18: error: lvalue required as increment operand
+  100 |   t35 = 0.000000 ++ ;
+      |                  ^~
+outputs/sintatico/repetição/forMultiploValido.c:124:18: error: lvalue required as increment operand
+  124 |   t48 = 0.000000 ++ ;
+      |                  ^~

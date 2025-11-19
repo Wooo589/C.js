@@ -1,0 +1,15 @@
+; --- Início do Código Intermediário ---
+  x = 10.000000
+  t2 = 10.000000 == 20.000000
+  ifFalse t2 goto L0
+  z = 30.000000
+  t5 = 10.000000 == 10.000000
+  ifFalse t5 goto L1
+  a = 40.000000
+L1:
+L0:
+  t8 = 10.000000 == 10.000000
+  ifFalse t8 goto L2
+  a = 40.000000
+L2:
+; --- Fim do Código Intermediário ---

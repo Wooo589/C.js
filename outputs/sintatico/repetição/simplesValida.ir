@@ -1,0 +1,24 @@
+; --- Início do Código Intermediário ---
+  a = 10.000000
+  i = 0.000000
+  t4 = 0.000000 ++ 
+  i = t4
+  t5 = 10.000000 ++ 
+  a = t5
+L0:
+  t7 = t4 < 10.000000
+  t8 = t4 ++ 
+  i = t8
+  t9 = t5 ++ 
+  a = t9
+  ifFalse t7 goto L1
+  t10 = t9 ++ 
+  a = t10
+L2:
+  t11 = t8 ++ 
+  i = t11
+  t12 = t10 ++ 
+  a = t12
+  goto L0
+L1:
+; --- Fim do Código Intermediário ---

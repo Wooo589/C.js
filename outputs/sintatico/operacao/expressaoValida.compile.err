@@ -1,0 +1,7 @@
+outputs/sintatico/operacao/expressaoValida.c:8:9: error: expected identifier or ‘(’ before ‘=’ token
+    8 | double  = 0.0;
+      |         ^
+outputs/sintatico/operacao/expressaoValida.c: In function ‘main’:
+outputs/sintatico/operacao/expressaoValida.c:13:17: error: lvalue required as decrement operand
+   13 |   t1 = 5.000000 -- ;
+      |                 ^~

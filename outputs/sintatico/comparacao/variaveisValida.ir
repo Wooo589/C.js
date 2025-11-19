@@ -1,0 +1,7 @@
+; --- Início do Código Intermediário ---
+  x = 10.000000
+  t1 = 10.000000 == y
+  ifFalse t1 goto L0
+  x = 20.000000
+L0:
+; --- Fim do Código Intermediário ---

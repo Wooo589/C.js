@@ -1,0 +1,7 @@
+; --- Início do Código Intermediário ---
+
+func obterValor
+  valor = 42.000000
+  return 42.000000
+end func obterValor
+; --- Fim do Código Intermediário ---
