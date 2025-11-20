@@ -9,7 +9,7 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 echo -e "${WHITE}============================================${NC}"
-echo -e "${WHITE}    SUITE DE TESTES - COMPILADOR C.js (2025)${NC}"
+echo -e "${WHITE}    SUITE DE TESTES - COMPILADOR C.js${NC}"
 echo -e "${WHITE}============================================${NC}"
 echo
 
