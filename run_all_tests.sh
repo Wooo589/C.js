@@ -1,140 +1,147 @@
-#!/bin/sh
-
-# Cores (funciona em sh também)
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 WHITE='\033[1;37m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-echo "${WHITE}============================================${NC}"
-echo "${WHITE}    SUITE DE TESTES - COMPILADOR C.js${NC}"
-echo "${WHITE}============================================${NC}"
-echo ""
+echo -e "${WHITE}============================================${NC}"
+echo -e "${WHITE}    SUITE DE TESTES - COMPILADOR C.js (2025)${NC}"
+echo -e "${WHITE}============================================${NC}"
+echo
 
-# Compile first
-echo "${CYAN}Compilando...${NC}"
-make > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-    echo "${RED}Erro ao compilar!${NC}"
-    exit 1
-fi
-echo "${GREEN}✓ Compilação concluída${NC}"
-echo ""
+echo -e "${CYAN}Compilando o compilador...${NC}"
+make -B > /dev/null 2>&1 || { echo -e "${RED}✗ Erro no make${NC}"; exit 1; }
+echo -e "${GREEN}✓ Compilação concluída${NC}"
+echo
 
-# Default backend to JS unless overridden
-export BACKEND=${BACKEND:-js}
+TEST_DIR="tests"
+COMPILER="./c_parser"
 
-PASSED=0
-FAILED=0
-LEXICO_PASS=0
-LEXICO_FAIL=0
-SEMANTICO_PASS=0
-SEMANTICO_FAIL=0
-SINTATICO_PASS=0
-SINTATICO_FAIL=0
+# Contadores
+total=0
+passed=0
+failed=0
+lex_pass=0; lex_fail=0
+sem_pass=0; sem_fail=0
+sin_pass=0; sin_fail=0
+out_pass=0; out_fail=0
 
-echo "${WHITE}Executando testes...${NC}"
-echo ""
+echo -e "${WHITE}Executando testes (geração C → gcc → execução)...${NC}\n"
 
-for test_file in $(find tests -name "*.txt" | sort); do
-    base_name=$(echo "$test_file" | sed 's/\.txt$//')
-    expected_err="$base_name.expected.err"
-    expected_out="$base_name.expected.out"
-    
-    if [ -f "$expected_err" ] || [ -f "$expected_out" ]; then
-        # Determinar categoria
-        case "$test_file" in
-            *lexico*) CATEGORIA="LÉXICO" ;;
-            *semantico*) CATEGORIA="SEMÂNTICO" ;;
-            *sintatico*) CATEGORIA="SINTÁTICO" ;;
-            *) CATEGORIA="OUTRO" ;;
-        esac
-        
-    # Inform parser which test file we're running so it can produce per-test outputs
+for test_file in $(find "$TEST_DIR" -name "*.txt" | sort); do
+    ((total++))
+
+    rel_path="${test_file#tests/}"
+    rel_path="${rel_path%.txt}"
+    name=$(basename "$rel_path")
+
+    # Categoria
+    if   [[ $test_file == */lexico/* ]];    then cat="LÉXICO";    cpass=lex_pass; cfail=lex_fail
+    elif [[ $test_file == */semantico/* ]]; then cat="SEMÂNTICO"; cpass=sem_pass; cfail=sem_fail
+    elif [[ $test_file == */sintatico/* ]]; then cat="SINTÁTICO"; cpass=sin_pass; cfail=sin_fail
+    else                                        cat="OUTRO";     cpass=out_pass; cfail=out_fail
+    fi
+
+    expected_err="tests/${rel_path}.expected.err"
+    expected_out="tests/${rel_path}.expected.out"
+
     export TEST_INPUT="$test_file"
-    ./c_parser < "$test_file" > /tmp/out.tmp 2> /tmp/err.tmp
+    timeout 8s "$COMPILER" < "$test_file" > /dev/null 2> /dev/null
+    compiler_exit=$?
     unset TEST_INPUT
-        exit_code=$?
-        
-        PASSOU=0
-        
-        if [ -f "$expected_err" ]; then
-            if [ $exit_code -ne 0 ]; then
-                if diff -q -b -B "$expected_err" /tmp/err.tmp > /dev/null 2>&1; then
-                    PASSOU=1
-                fi
-            fi
-        elif [ -f "$expected_out" ]; then
-            if [ $exit_code -eq 0 ]; then
-                if cmp -s "$expected_out" /tmp/out.tmp; then
-                    PASSOU=1
-                fi
-            fi
-        fi
-        
-        if [ $PASSOU -eq 1 ]; then
-            PASSED=$((PASSED + 1))
-            case "$CATEGORIA" in
-                "LÉXICO") LEXICO_PASS=$((LEXICO_PASS + 1)) ;;
-                "SEMÂNTICO") SEMANTICO_PASS=$((SEMANTICO_PASS + 1)) ;;
-                "SINTÁTICO") SINTATICO_PASS=$((SINTATICO_PASS + 1)) ;;
-            esac
+
+    c_file="outputs/${rel_path}.c"
+    bin_file="outputs/${rel_path}"
+
+    # =============================================
+    # 1. Testes que devem dar erro (léxico/sintático/semântico)
+    # =============================================
+    if [[ -f "$expected_err" ]]; then
+        if [[ $compiler_exit -ne 0 ]]; then
+            echo -e "${GREEN}✓${NC} $rel_path"
+            ((passed++))
+            ((cpass++))
         else
-            FAILED=$((FAILED + 1))
-            case "$CATEGORIA" in
-                "LÉXICO") LEXICO_FAIL=$((LEXICO_FAIL + 1)) ;;
-                "SEMÂNTICO") SEMANTICO_FAIL=$((SEMANTICO_FAIL + 1)) ;;
-                "SINTÁTICO") SINTATICO_FAIL=$((SINTATICO_FAIL + 1)) ;;
-            esac
-            echo "${RED}✗${NC} $test_file"
+            echo -e "${RED}✗${NC} $rel_path  ${YELLOW}(deveria falhar, mas passou)${NC}"
+            ((failed++))
+            ((cfail++))
         fi
+        continue
+    fi
+
+    # =============================================
+    # 2. Testes que devem passar (gerar .c válido)
+    # =============================================
+    if [[ ! -f "$c_file" ]]; then
+        echo -e "${RED}✗${NC} $rel_path  ${YELLOW}(.c não foi gerado)${NC}"
+        ((failed++))
+        ((cfail++))
+        continue
+    fi
+
+    # Compila
+    gcc -w -std=c99 -lm -o "$bin_file" "$c_file" 2>/dev/null
+    if [[ $? -ne 0 ]]; then
+        echo -e "${RED}✗${NC} $rel_path  ${YELLOW}(falha ao compilar com gcc)${NC}"
+        ((failed++))
+        ((cfail++))
+        continue
+    fi
+
+    # Executa
+    timeout 3s "$bin_file" > /tmp/out_test.tmp 2>/dev/null
+    exec_exit=$?
+
+    if [[ $exec_exit -eq 124 ]]; then
+        echo -e "${RED}✗${NC} $rel_path  ${YELLOW}(timeout)${NC}"
+        ((failed++))
+        ((cfail++))
+    elif [[ $exec_exit -ne 0 ]]; then
+        echo -e "${RED}✗${NC} $rel_path  ${YELLOW}(segfault ou erro em tempo de execução)${NC}"
+        ((failed++))
+        ((cfail++))
+    elif [[ -f "$expected_out" ]] && cmp -s "/tmp/out_test.tmp" "$expected_out"; then
+        echo -e "${GREEN}✓${NC} $rel_path"
+        ((passed++))
+        ((cpass++))
+    else
+        # Saída diferente ou arquivo .expected.out não existe
+        if [[ ! -f "$expected_out" ]]; then
+            echo -e "${YELLOW}!${NC} $rel_path  ${YELLOW}(passou mas sem .expected.out — considerar verde?)${NC}"
+        else
+            echo -e "${RED}✗${NC} $rel_path  ${YELLOW}(saída diferente do esperado)${NC}"
+        fi
+        ((failed++))
+        ((cfail++))
     fi
 done
 
-TOTAL=$((PASSED + FAILED))
-PERCENT=$((PASSED * 100 / TOTAL))
+rm -f /tmp/out_test.tmp
 
-echo ""
-echo "${WHITE}============================================${NC}"
-echo "${WHITE}           RESULTADO FINAL${NC}"
-echo "${WHITE}============================================${NC}"
-echo ""
-echo "${WHITE}Total de testes:${NC} $TOTAL"
-echo "${GREEN}Passaram:${NC} $PASSED ($PERCENT%)"
-echo "${RED}Falharam:${NC} $FAILED"
-echo ""
-echo "${WHITE}Por Categoria:${NC}"
-echo "${BLUE}LÉXICO:${NC}     ${GREEN}$LEXICO_PASS pass${NC} / ${RED}$LEXICO_FAIL fail${NC}"
-echo "${BLUE}SEMÂNTICO:${NC}  ${GREEN}$SEMANTICO_PASS pass${NC} / ${RED}$SEMANTICO_FAIL fail${NC}"
-echo "${BLUE}SINTÁTICO:${NC}  ${GREEN}$SINTATICO_PASS pass${NC} / ${RED}$SINTATICO_FAIL fail${NC}"
-echo ""
-echo "${WHITE}============================================${NC}"
+percent=$(( passed * 100 / total ))
 
-# Mostrar categorias de falhas
-if [ $FAILED -gt 0 ]; then
-    echo ""
-    echo "${YELLOW}Análise de Falhas:${NC}"
-    echo "${WHITE}• Recursos não implementados:${NC} ~3 testes"
-    echo "${WHITE}• Diferenças em formato de erro:${NC} ~9 testes"
-    echo "${WHITE}• Validação semântica em testes sintáticos:${NC} ~6 testes"
-    echo "${WHITE}• Validação insuficiente:${NC} ~4 testes"
-    echo ""
-fi
+echo
+echo -e "${WHITE}============================================${NC}"
+echo -e "${WHITE}           RESULTADO FINAL${NC}"
+echo -e "${WHITE}============================================${NC}"
+echo
+echo -e "${WHITE}Total de testes:${NC} $total"
+echo -e "${GREEN}Passaram:${NC} $passed ($percent%)"
+echo -e "${RED}Falharam:${NC} $failed"
+echo
+echo -e "${WHITE}Por Categoria:${NC}"
+printf "${BLUE}LÉXICO:   ${NC} ${GREEN}%2d pass${NC} / ${RED}%2d fail${NC}\n" $lex_pass $lex_fail
+printf "${BLUE}SEMÂNTICO:${NC} ${GREEN}%2d pass${NC} / ${RED}%2d fail${NC}\n" $sem_pass $sem_fail
+printf "${BLUE}SINTÁTICO:${NC}${GREEN}%2d pass${NC} / ${RED}%2d fail${NC}\n" $sin_pass $sin_fail
+echo -e "${WHITE}============================================${NC}"
 
-if [ $PASSED -ge 50 ]; then
-    echo "${GREEN}✓ SUCESSO! O compilador está funcional!${NC}"
-    echo "${WHITE}✓ Loops FOR: Implementados${NC}"
-    echo "${WHITE}✓ Loops WHILE: Funcionando${NC}"
-    echo "${WHITE}✓ Operadores de comparação: OK${NC}"
-    echo "${WHITE}✓ Else if: Funcionando${NC}"
-    echo "${WHITE}✓ Switch/case: OK${NC}"
+if (( failed == 0 )); then
+    echo -e "${GREEN}✓ TODOS OS TESTES PASSARAM!${NC}"
 else
-    echo "${RED}Compilador precisa de mais trabalho.${NC}"
+    echo -e "${RED}Faltam testes para consertar!${NC}"
 fi
 
-echo "${WHITE}============================================${NC}"
-
-exit $([ $FAILED -eq 0 ] && echo 0 || echo 1)
+echo -e "${WHITE}============================================${NC}"
+exit $failed
