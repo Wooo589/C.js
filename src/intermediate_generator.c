@@ -477,7 +477,7 @@ void gerar_ir_main(ASTNode *ast_root, SymbolTable *gt, FILE *saida) {
 
             /* Try to auto-compile the generated C to an executable next to the .c */
             if (out_base) {
-                char cmd[2048];
+                char cmd[8192];
                 char errpath[1200];
                 snprintf(errpath, sizeof(errpath), "%s.compile.err", out_base);
                 /* compile with -O2 and link math library */
