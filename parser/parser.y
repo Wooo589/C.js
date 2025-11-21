@@ -681,26 +681,19 @@ condicao:
     ;
 
 bloco:
-    LBRACE 
-    { 
-        current_table = create_symbol_table(current_table);
-    }
-    comandos RBRACE 
+    LBRACE comandos RBRACE 
     {
+        current_table = create_symbol_table(current_table);
         $$ = create_node(AST_BLOCK, NULL, NULL, contaLinhas);
-        $$->children = $3;
-
+        $$->children = $2;
         print_symbol_table(current_table);
         SymbolTable *temp = current_table;
         current_table = current_table->parent;
         free_symbol_table(temp);
     }
-    | LBRACE 
+    | LBRACE RBRACE 
     { 
-        current_table = create_symbol_table(current_table); 
-    }
-    RBRACE 
-    { 
+        current_table = create_symbol_table(current_table);
         $$ = create_node(AST_BLOCK, NULL, NULL, contaLinhas);
         SymbolTable *temp = current_table;
         current_table = current_table->parent;

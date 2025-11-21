@@ -19,3 +19,4 @@ output.ir
 output.c
 output.js
 
+test_report.log
