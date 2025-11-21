@@ -122,7 +122,7 @@
 <h5>Assuntos discutidos</h5>
 
 - Progresso do analisador semântico e sintático;
-- Evolução da cobertura de testes nos analisadors;
+- Evolução da cobertura de testes nos analisadores;
 - Envio do formulário do P2.
 
 <h5>Deliberações</h5>
@@ -166,6 +166,52 @@
 | [`@Lucas`](https://github.com/LucasAlves71) e [`@Renan`](https://github.com/renantfm4) | Subir alterações do analisador semântico |
 | [`@Leandro`](https://github.com/LeanArs) e [`@Yan`](https://github.com/Yanmatheus0812) | Dar continuidade ao gerador de código intermediário |
 
+### Sprint 5
+
+#### Ata 12/11
+
+| Data | Horário | Local | Participantes | 
+| :------: | :-------: | :----------: | -------- | 
+| 12/11/2025 | 20h30 | Microsoft Teams | <ul><li>[`@Leandro`](https://github.com/LeanArs)</li><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li><li>[`@Yan`](https://github.com/Yanmatheus0812)</li></ul> | 
+
+<h5>Assuntos discutidos</h5>
+
+- Progresso do analisador semântico e da geração do código intermediário;
+- Revisão da cobertura de testes até esse momento;
+- Módulo de geração do código final;
+- Possibilidade de finalizar o trabalho para a avaliação preliminar do professor.
+
+<h5>Deliberações</h5>
+
+- O analisador semântico terá os seus erros corrigidos;
+- A geração do código intermediário será otimizado;
+- O rito da daily será implementado nessa sprint;
+- Um ponto de controle será feito na segunda-feira (17/11).
+
+<h5>Ações e responsáveis:</h5>
+
+| Ação | Responsável |
+| ---- | ----------- |
+| [`@Willian`](https://github.com/Wooo589)| Organização do repositório e apoio nas tarefas da sprint |
+| [`@Lucas`](https://github.com/LucasAlves71) e [`@Renan`](https://github.com/renantfm4) | Arrumar erros no analisador semântico |
+| [`@Leandro`](https://github.com/LeanArs) e [`@Yan`](https://github.com/Yanmatheus0812) | Otimização da geração do código intermediário |
+
+#### Ata 17/11
+
+| Data | Horário | Local | Participantes | 
+| :------: | :-------: | :----------: | -------- | 
+| 17/11/2025 | 21h | Microsoft Teams | <ul><li>[`@Leandro`](https://github.com/LeanArs)</li><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li><li>[`@Yan`](https://github.com/Yanmatheus0812)</li></ul> | 
+
+<h5>Assuntos discutidos</h5>
+
+- Progresso do que foi arrumado no analisador semântico;
+- Progresso do que foi implementado na otimização do gerador de código intermediário.
+
+<h5>Deliberações</h5>
+
+- A geração de código final preliminar deve ser finalizado até quinta-feira (20/11);
+- Para dar garantia da continuidade do nosso trabalho, começaremos a enviar alinhamentos assíncronos de dia e nos reuniremos à noite para agilizarmos eventuais pendências que surgirem no dia.
+
 ## Histórico de versão
 
 | **Data** | **Versão** | **Descrição** | **Autor(es)** | **Revisor(es)** | **Data de revisão** |
@@ -174,3 +220,4 @@
 | 15/10/2025 | `1.1` | Adição da 3ª e 4ª sprint no cronograma. | [`@Willian`](https://github.com/Wooo589) | | |
 | 27/10/2025 | `1.2` | Inserção da 5ª e 6ª sprint no cronograma. | [`@Willian`](https://github.com/Wooo589) | | |
  04/11/2025 | `1.3` | Preenchimento das atas das sprints. | [`@Willian`](https://github.com/Wooo589) | | |
+ 19/11/2025 | `1.4` | Preenchimento das atas da sprint 5. | [`@Willian`](https://github.com/Wooo589) | | |
