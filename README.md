@@ -31,7 +31,6 @@ Projeto pertencente ao grupo 05 de Compiladores 2025.2 da FCTE/UnB com o objetiv
   </tr>
 </table>
 
-# Como testar o compilador C.js e explicações gerais
 
 ## Configuração Inicial
 
@@ -39,7 +38,7 @@ Projeto pertencente ao grupo 05 de Compiladores 2025.2 da FCTE/UnB com o objetiv
 Antes de rodar qualquer teste, compile o projeto:
 
 ```bash
-cd /media/yan/yan/codes/materias_unb/COMP/C.js
+cd C.js
 make clean && make -j$(nproc)
 ```
 
@@ -76,7 +75,7 @@ Arquivos associados (opcionais):
 ### 1. Rodar Todos os Testes
 
 ```bash
-./run_all_tests.sh
+./run_tests.sh
 ```
 
 **Saída:**

@@ -16,129 +16,129 @@
 
 #### Ata 17/09
 
-| Data | Horário | Local | Participantes | Link |
-| :------: | :-------: | :----------: | -------- | :----------: |
-| 17/09/2025 | 21h | Microsoft Teams | <ul><li>[`@Leandro`](https://github.com/LeanArs)</li><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li><li>[`@Yan`](https://github.com/Yanmatheus0812)</li></ul> | |
+| Data | Horário | Local | Participantes |
+| :------: | :-------: | :----------: | -------- | 
+| 17/09/2025 | 21h | Microsoft Teams | <ul><li>[`@Leandro`](https://github.com/LeanArs)</li><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li><li>[`@Yan`](https://github.com/Yanmatheus0812)</li></ul> | 
 
 <h5>Assuntos discutidos</h5>
 
-- assunto discutido 1;
-- assunto discutido 2.
+- Alocação de atividades para cada membro;
+- Apresentação das tarefas das sprints 1 e 2, e como as sprints serão documentadas.
 
 <h5>Deliberações</h5>
 
-- deliberação 1;
-- deliberação 2.
+- Todos irão focar no léxico;
+- A documentação preliminar deve ser elaborada a partir desssa sprint.
 
 <h5>Ações e responsáveis:</h5>
 
 | Ação | Responsável |
 | ---- | ----------- |
-| [`@Willian`](https://github.com/Wooo589)|  |
-| [`@Lucas`](https://github.com/LucasAlves71) e [`@Renan`](https://github.com/renantfm4) |  |
-| [`@Leandro`](https://github.com/LeanArs) e [`@Yan`](https://github.com/Yanmatheus0812) |  |
+| [`@Willian`](https://github.com/Wooo589)| Documentação preliminar e apoio no analisador léxico |
+| [`@Leandro`](https://github.com/LeanArs), [`@Lucas`](https://github.com/LucasAlves71), [`@Renan`](https://github.com/renantfm4) e [`@Yan`](https://github.com/Yanmatheus0812) | Construção do analisador léxico |
 
 ### Sprint 2
 
 #### Ata 26/09
 
-| Data | Horário | Local | Participantes | Link |
-| :------: | :-------: | :----------: | -------- | :----------: |
-| 26/09/2025 | 21h | Microsoft Teams | <ul><li>[`@Leandro`](https://github.com/LeanArs)</li><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li><li>[`@Yan`](https://github.com/Yanmatheus0812)</li></ul> | |
+| Data | Horário | Local | Participantes | 
+| :------: | :-------: | :----------: | -------- | 
+| 26/09/2025 | 21h | Microsoft Teams | <ul><li>[`@Leandro`](https://github.com/LeanArs)</li><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li><li>[`@Yan`](https://github.com/Yanmatheus0812)</li></ul> |
 
 <h5>Assuntos discutidos</h5>
 
-- assunto discutido 1;
-- assunto discutido 2.
+- Discussão do progresso do analisador léxico;
+- Construção das primeiras regras do analisador sintático;
+- Envio do formulário do P1.
 
 <h5>Deliberações</h5>
 
-- deliberação 1;
-- deliberação 2.
+- Revisão do que foi implementado do analisador léxico;
+- O analisador sintático será trabalhado ao decorrer da revisão do analisador léxico;
+- A documentação preliminar que inclui as sprints 1 e 2 será lançada na página do repositório;
+- O líder está encarregado de preencher o formulário do P1.
 
 <h5>Ações e responsáveis:</h5>
 
 | Ação | Responsável |
 | ---- | ----------- |
-| [`@Willian`](https://github.com/Wooo589)|  |
-| [`@Lucas`](https://github.com/LucasAlves71) e [`@Renan`](https://github.com/renantfm4) |  |
-| [`@Leandro`](https://github.com/LeanArs) e [`@Yan`](https://github.com/Yanmatheus0812) |  |
+| [`@Willian`](https://github.com/Wooo589)| Envio do formulaŕio P1, documentação com deploy e apoio nas atividades da sprint |
+| [`@Lucas`](https://github.com/LucasAlves71) e [`@Renan`](https://github.com/renantfm4) | Implementação das primeiras regras do analisador sintático |
+| [`@Leandro`](https://github.com/LeanArs) e [`@Yan`](https://github.com/Yanmatheus0812) | Finalização do analisador léxico e implementação de testes |
 
 ### Sprint 3
 
 #### Ata 01/10
 
-| Data | Horário | Local | Participantes | Link |
-| :------: | :-------: | :----------: | -------- | :----------: |
-| 01/10/2025 | 21h | Microsoft Teams | <ul><li>[`@Leandro`](https://github.com/LeanArs)</li><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li></ul> | |
+| Data | Horário | Local | Participantes | 
+| :------: | :-------: | :----------: | -------- | 
+| 01/10/2025 | 21h | Microsoft Teams | <ul><li>[`@Leandro`](https://github.com/LeanArs)</li><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li></ul> | 
 
 <h5>Assuntos discutidos</h5>
 
-- assunto discutido 1;
-- assunto discutido 2.
+- Progresso do que foi elaborado na sprint passada;
+- Análise semântica já estava sendo desenvolvida na sprint 2;
+- Alocação de tarefas para a sprint 3.
 
 <h5>Deliberações</h5>
 
-- deliberação 1;
-- deliberação 2.
+- A cobertura de testes será revisada e ampliada;
+- A documentação será atualizada para guiar o usuário em como executar o compilador;
+- O analisador semântico será revisado para que haja um melhor entendimento do que foi implementado;
+- O analisador sintático terá a sua ampliação e implementação de sua estrutura de dados (AST e tabela de símbolos).
 
 <h5>Ações e responsáveis:</h5>
 
 | Ação | Responsável |
 | ---- | ----------- |
-| [`@Willian`](https://github.com/Wooo589)|  |
-| [`@Lucas`](https://github.com/LucasAlves71) e [`@Renan`](https://github.com/renantfm4) |  |
-| [`@Leandro`](https://github.com/LeanArs) e [`@Yan`](https://github.com/Yanmatheus0812) |  |
+| [`@Leandro`](https://github.com/LeanArs) | Aumentar a cobertura de testes |
+| [`@Willian`](https://github.com/Wooo589) e [`@Yan`](https://github.com/Yanmatheus0812)| Revisão da documentação e do analisador semântico |
+| [`@Lucas`](https://github.com/LucasAlves71) e [`@Renan`](https://github.com/renantfm4) | Aprimoramento do analisador sintático |
 
 #### Ata 08/10
 
-| Data | Horário | Local | Participantes | Link |
-| :------: | :-------: | :----------: | -------- | :----------: |
-| 08/10/2025 | 21h | Microsoft Teams | <ul><li>[`@Leandro`](https://github.com/LeanArs)</li><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li><li>[`@Yan`](https://github.com/Yanmatheus0812)</li></ul> | |
+| Data | Horário | Local | Participantes | 
+| :------: | :-------: | :----------: | -------- | 
+| 08/10/2025 | 21h | Microsoft Teams | <ul><li>[`@Leandro`](https://github.com/LeanArs)</li><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li><li>[`@Yan`](https://github.com/Yanmatheus0812)</li></ul> | 
 
 <h5>Assuntos discutidos</h5>
 
-- assunto discutido 1;
-- assunto discutido 2.
+- Progresso do que foi elaborado até o ponto de controle da sprint;
+- Atividades com dificuldades de avanço por conta de obrigações de outras matérias da faculdade.
 
 <h5>Deliberações</h5>
 
-- deliberação 1;
-- deliberação 2.
-
-<h5>Ações e responsáveis:</h5>
-
-| Ação | Responsável |
-| ---- | ----------- |
-| [`@Willian`](https://github.com/Wooo589)|  |
-| [`@Lucas`](https://github.com/LucasAlves71) e [`@Renan`](https://github.com/renantfm4) |  |
-| [`@Leandro`](https://github.com/LeanArs) e [`@Yan`](https://github.com/Yanmatheus0812) |  |
+- Uma nova revisão dos analisadores será feita até o último dia da sprint;
+- As funções estabelecidas na reunião passada estarão mantidas.
 
 ### Sprint 4
 
 #### Ata 15/10
 
-| Data | Horário | Local | Participantes | Link |
-| :------: | :-------: | :----------: | -------- | :----------: |
-| 15/10/2025 | 20h | Microsoft Teams | <ul><li>[`@Leandro`](https://github.com/LeanArs)</li><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li><li>[`@Yan`](https://github.com/Yanmatheus0812)</li></ul> | |
+| Data | Horário | Local | Participantes | 
+| :------: | :-------: | :----------: | -------- | 
+| 15/10/2025 | 20h | Microsoft Teams | <ul><li>[`@Leandro`](https://github.com/LeanArs)</li><li>[`@Lucas`](https://github.com/LucasAlves71)</li><li>[`@Renan`](https://github.com/renantfm4)</li><li>[`@Willian`](https://github.com/Wooo589)</li><li>[`@Yan`](https://github.com/Yanmatheus0812)</li></ul> | 
 
 <h5>Assuntos discutidos</h5>
 
-- assunto discutido 1;
-- assunto discutido 2.
+- Progresso do analisador semântico e sintático;
+- Evolução da cobertura de testes nos analisadors;
+- Envio do formulário do P2.
 
 <h5>Deliberações</h5>
 
-- deliberação 1;
-- deliberação 2.
+- O analisador semântico será finalizado;
+- A geração do código intermediário será trabalhado;
+- A otimização do módulo de geração do código intermediário será focada na próxima sprint;
+- O líder está encarregado de preencher o formulário do P2.
 
 <h5>Ações e responsáveis:</h5>
 
 | Ação | Responsável |
 | ---- | ----------- |
-| [`@Willian`](https://github.com/Wooo589)|  |
-| [`@Lucas`](https://github.com/LucasAlves71) e [`@Renan`](https://github.com/renantfm4) |  |
-| [`@Leandro`](https://github.com/LeanArs) e [`@Yan`](https://github.com/Yanmatheus0812) |  |
+| [`@Willian`](https://github.com/Wooo589)| Apoio nas tarefas da sprint |
+| [`@Lucas`](https://github.com/LucasAlves71) e [`@Renan`](https://github.com/renantfm4) | Finalizar o analisador semântico |
+| [`@Leandro`](https://github.com/LeanArs) e [`@Yan`](https://github.com/Yanmatheus0812) | Implementar a geração do código intermediário |
 
 #### Ata 22/10
 
@@ -173,3 +173,4 @@
 | 29/09/2025 | `1.0` | Versão inicial do documento. | [`@Willian`](https://github.com/Wooo589) | | |
 | 15/10/2025 | `1.1` | Adição da 3ª e 4ª sprint no cronograma. | [`@Willian`](https://github.com/Wooo589) | | |
 | 27/10/2025 | `1.2` | Inserção da 5ª e 6ª sprint no cronograma. | [`@Willian`](https://github.com/Wooo589) | | |
+ 04/11/2025 | `1.3` | Preenchimento das atas das sprints. | [`@Willian`](https://github.com/Wooo589) | | |
